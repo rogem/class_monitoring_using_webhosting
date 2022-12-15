@@ -679,16 +679,10 @@ def new_win():
 		min_strttime_sched = Spinbox(popupwindow_sched, state='readonly', from_=00, to=59, format="%02.0f",textvariable=var_min_strt)
 		min_strttime_sched.place(x=585, y=209, width=35)
 
-		    # Entry Start Time Second
-		var_sec_strt = IntVar()
-		var_sec_strt.set(00)
-		sec_strttime_sched = Spinbox(popupwindow_sched, state='readonly', from_=00, to=59, format="%02.0f",textvariable=var_sec_strt)
-		sec_strttime_sched.place(x=625, y=209, width=35)
-
 		    # ComboBox College Department
 		p_strttime_sched = ttk.Combobox(popupwindow_sched, state='readonly', values=["AM", "PM",])
 		p_strttime_sched.set("AM")
-		p_strttime_sched.place(x=665, y=209, width=45)
+		p_strttime_sched.place(x=625, y=209, width=45)
 
 		    # Entry Room
 		room_sched = Entry(popupwindow_sched)
@@ -710,16 +704,10 @@ def new_win():
 		min_endtime_sched = Spinbox(popupwindow_sched, state='readonly', from_=00, to=59, format="%02.0f",textvariable=var_min_end)
 		min_endtime_sched.place(x=850, y=209, width=35)
 
-		    # Entry End Time Second
-		var_sec_end = IntVar()
-		var_sec_end.set(00)
-		sec_endtime_sched = Spinbox(popupwindow_sched, state='readonly', from_=00, to=59, format="%02.0f",textvariable=var_sec_end)
-		sec_endtime_sched.place(x=890, y=209, width=35)
-
 		    # ComboBox College Department
 		p_endtime_sched = ttk.Combobox(popupwindow_sched, state='readonly', values=["AM", "PM",])
 		p_endtime_sched.set("AM")
-		p_endtime_sched.place(x=930, y=209, width=45)
+		p_endtime_sched.place(x=890, y=209, width=45)
 
 		    # Entry Section
 		section_sched = Entry(popupwindow_sched)
@@ -1258,6 +1246,26 @@ def new_win():
 		popupwindow.summary_bg_img_lb = Label(popupwindow, image = popupwindow.photo)
 		popupwindow.summary_bg_img_lb.pack()
 
+		emp_num = employee_num_math_rec.get()
+		emp_name = employee_name_math_rec.get()
+
+		def math_read_report():
+			
+			cursor = conn.cursor()
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			results_math_report = cursor.fetchall()
+			conn.commit()
+			return results_math_report
+
+		def refreshTable_math_report():
+			for data_math_report in data_table_summary.get_children():
+				data_table_summary.delete(data_math_report)
+
+			for results_math_rec_report in reverse(math_read_report()):
+				data_table_summary.insert(parent='', index='end', iid=results_math_rec_report, text="", values=(results_math_rec_report), tag="orow")
+			data_table_summary.tag_configure('orow', background='#EEEEEE')
+
 		         # Data Table "TreeView"
 		scrollbarx_summary = Scrollbar(popupwindow, orient=HORIZONTAL)
 		scrollbarx_summary.place(x=500, y=579, width=367)
@@ -1274,25 +1282,28 @@ def new_win():
 		scrollbarx_summary.configure(command=data_table_summary.xview)
 		scrollbary_summary.configure(command=data_table_summary.yview)
 
-		data_table_summary['columns'] = ("Date","Subject","Room","Start Time","End Time","Remark")
+		data_table_summary['columns'] = ("Date","Subject","Class Schedule (Room)","Class","Start Time","End Time","Remark")
 		# Format Columns
 		data_table_summary.column("#0", width=0, stretch=NO)
-		data_table_summary.column("Date", anchor=W, width=100)
-		data_table_summary.column("Subject", anchor=W, width=100)
-		data_table_summary.column("Room", anchor=W, width=100)
-		data_table_summary.column("Start Time", anchor=W, width=100)
-		data_table_summary.column("End Time", anchor=W, width=100)
-		data_table_summary.column("Remark", anchor=W, width=100)
+		data_table_summary.column("Date", anchor=CENTER, width=100)
+		data_table_summary.column("Subject", anchor=CENTER, width=100)
+		data_table_summary.column("Class Schedule (Room)", anchor=CENTER, width=200)
+		data_table_summary.column("Class", anchor=CENTER, width=100)
+		data_table_summary.column("Start Time", anchor=CENTER, width=100)
+		data_table_summary.column("End Time", anchor=CENTER, width=100)
+		data_table_summary.column("Remark", anchor=CENTER, width=100)
 
 		# Create Headings
 		data_table_summary.heading("Date", text="Date", anchor=CENTER)
 		data_table_summary.heading("Subject", text="Subject", anchor=CENTER)
-		data_table_summary.heading("Room", text="Room", anchor=CENTER)
+		data_table_summary.heading("Class Schedule (Room)", text="Class Schedule (Room)", anchor=CENTER)
+		data_table_summary.heading("Class", text="Class", anchor=CENTER)
 		data_table_summary.heading("Start Time", text="Start Time", anchor=CENTER)
 		data_table_summary.heading("End Time", text="End Time", anchor=CENTER)
 		data_table_summary.heading("Remark", text="Remark", anchor=CENTER)
-		
 
+		refreshTable_math_report()
+		
 		    # ComboBox College Department
 		summary_department_combobox = ttk.Combobox(popupwindow, state='disabled', values=["Mathematics", "ITE", "Psychology", "Applied Physics"])
 		summary_department_combobox.place(x=253, y=245, width=175)
@@ -1385,7 +1396,7 @@ def new_win():
 		    # Show All Button
 		showall_btn_summary = PhotoImage(file = "pic/btn_showall_small.png")
 		summary_button_showall = customtkinter.CTkButton(master=popupwindow,image=showall_btn_summary, text="" ,
-		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command='refreshTable_math_report')
+		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_math_report)
 		summary_button_showall.place(x=650, y=598, height=20,width=90)
 
 	# ============= Psychology Summary Report  ========================================================================================================================
@@ -1429,12 +1440,13 @@ def new_win():
 		scrollbarx_summary_psyc.configure(command=data_table_summary_psyc.xview)
 		scrollbary_summary_psyc.configure(command=data_table_summary_psyc.yview)
 
-		data_table_summary_psyc['columns'] = ("Date","Subject","Room","Start Time","End Time","Remark")
+		data_table_summary_psyc['columns'] = ("Date","Subject","Class Schedule (Room)","Class","Start Time","End Time","Remark")
 		# Format Columns
 		data_table_summary_psyc.column("#0", width=0, stretch=NO)
 		data_table_summary_psyc.column("Date", anchor=W, width=100)
 		data_table_summary_psyc.column("Subject", anchor=W, width=100)
-		data_table_summary_psyc.column("Room", anchor=W, width=100)
+		data_table_summary_psyc.column("Class Schedule (Room)", anchor=W, width=200)
+		data_table_summary_psyc.column("Class", anchor=W, width=100)
 		data_table_summary_psyc.column("Start Time", anchor=W, width=100)
 		data_table_summary_psyc.column("End Time", anchor=W, width=100)
 		data_table_summary_psyc.column("Remark", anchor=W, width=100)
@@ -1442,7 +1454,8 @@ def new_win():
 		# Create Headings
 		data_table_summary_psyc.heading("Date", text="Date", anchor=CENTER)
 		data_table_summary_psyc.heading("Subject", text="Subject", anchor=CENTER)
-		data_table_summary_psyc.heading("Room", text="Room", anchor=CENTER)
+		data_table_summary_psyc.heading("Class Schedule (Room)", text="Class Schedule (Room)", anchor=CENTER)
+		data_table_summary_psyc.heading("Class", text="Class", anchor=CENTER)
 		data_table_summary_psyc.heading("Start Time", text="Start Time", anchor=CENTER)
 		data_table_summary_psyc.heading("End Time", text="End Time", anchor=CENTER)
 		data_table_summary_psyc.heading("Remark", text="Remark", anchor=CENTER)
@@ -1583,12 +1596,13 @@ def new_win():
 		scrollbarx_summary_applied.configure(command=data_table_summary_applied.xview)
 		scrollbary_summary_applied.configure(command=data_table_summary_applied.yview)
 
-		data_table_summary_applied['columns'] = ("Date","Subject","Room","Start Time","End Time","Remark")
+		data_table_summary_applied['columns'] = ("Date","Subject","Class Schedule (Room)","Class","Start Time","End Time","Remark")
 		# Format Columns
 		data_table_summary_applied.column("#0", width=0, stretch=NO)
 		data_table_summary_applied.column("Date", anchor=W, width=100)
 		data_table_summary_applied.column("Subject", anchor=W, width=100)
-		data_table_summary_applied.column("Room", anchor=W, width=100)
+		data_table_summary_applied.column("Class Schedule (Room)", anchor=W, width=200)
+		data_table_summary_applied.column("Class", anchor=W, width=100)
 		data_table_summary_applied.column("Start Time", anchor=W, width=100)
 		data_table_summary_applied.column("End Time", anchor=W, width=100)
 		data_table_summary_applied.column("Remark", anchor=W, width=100)
@@ -1596,7 +1610,8 @@ def new_win():
 		# Create Headings
 		data_table_summary_applied.heading("Date", text="Date", anchor=CENTER)
 		data_table_summary_applied.heading("Subject", text="Subject", anchor=CENTER)
-		data_table_summary_applied.heading("Room", text="Room", anchor=CENTER)
+		data_table_summary_applied.heading("Class Schedule (Room)", text="Class Schedule (Room)", anchor=CENTER)
+		data_table_summary_applied.heading("Class", text="Class", anchor=CENTER)
 		data_table_summary_applied.heading("Start Time", text="Start Time", anchor=CENTER)
 		data_table_summary_applied.heading("End Time", text="End Time", anchor=CENTER)
 		data_table_summary_applied.heading("Remark", text="Remark", anchor=CENTER)
@@ -1738,21 +1753,22 @@ def new_win():
 		scrollbarx_summary_ite.configure(command=data_table_summary_ite.xview)
 		scrollbary_summary_ite.configure(command=data_table_summary_ite.yview)
 
-		data_table_summary_ite['columns'] = ("Date","Subject","Room","Start Time","End Time","Remark")
+		data_table_summary_ite['columns'] = ("Date","Subject","Class Schedule (Room)","Class","Start Time","End Time","Remark")
 		# Format Columns
 		data_table_summary_ite.column("#0", width=0, stretch=NO)
 		data_table_summary_ite.column("Date", anchor=W, width=100)
 		data_table_summary_ite.column("Subject", anchor=W, width=100)
-		data_table_summary_ite.column("Room", anchor=W, width=100)
+		data_table_summary_ite.column("Class Schedule (Room)", anchor=W, width=200)
+		data_table_summary_ite.column("Class", anchor=W, width=100)
 		data_table_summary_ite.column("Start Time", anchor=W, width=100)
 		data_table_summary_ite.column("End Time", anchor=W, width=100)
 		data_table_summary_ite.column("Remark", anchor=W, width=100)
-		
 
 		# Create Headings
 		data_table_summary_ite.heading("Date", text="Date", anchor=CENTER)
 		data_table_summary_ite.heading("Subject", text="Subject", anchor=CENTER)
-		data_table_summary_ite.heading("Room", text="Room", anchor=CENTER)
+		data_table_summary_ite.heading("Class Schedule (Room)", text="Class Schedule (Room)", anchor=CENTER)
+		data_table_summary_ite.heading("Class", text="Class", anchor=CENTER)
 		data_table_summary_ite.heading("Start Time", text="Start Time", anchor=CENTER)
 		data_table_summary_ite.heading("End Time", text="End Time", anchor=CENTER)
 		data_table_summary_ite.heading("Remark", text="Remark", anchor=CENTER)
