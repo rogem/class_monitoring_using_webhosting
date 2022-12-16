@@ -543,7 +543,6 @@ def new_win():
 
 ############################################################################### Schedule Part ###################################################################################################################################
 
-
 	def Schedule():
 		popupwindow_sched = Toplevel(main_window)
 		popupwindow_sched.title("Schedule")
@@ -1129,6 +1128,12 @@ def new_win():
 	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=lambda: show_frame(page4))
 	mntoring_button_back.place(x=30, y=320, height=50,width=140)
 
+		# Special Order Number Button
+	so_btn_mntoring = PhotoImage(file = "pic/btn_so_number.png")
+	mntoring_button_so = customtkinter.CTkButton(master=class_moniroting,image=so_btn_mntoring, text="" ,
+	                                            corner_radius=10,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command='')
+	mntoring_button_so.place(x=280, y=560, height=50,width=175)
+
 
 ############################################################################### Create Account Part ###################################################################################################################################
 
@@ -1248,6 +1253,7 @@ def new_win():
 
 		emp_num = employee_num_math_rec.get()
 		emp_name = employee_name_math_rec.get()
+		List=[]
 
 		    # Get Current Time and Date
 		def time_report():
@@ -1257,6 +1263,9 @@ def new_win():
 
 			string_date = strftime('%d-%m-20%y')
 			date_lb_summary.configure(text = string_date)
+
+			string_day = strftime('%a')
+			day_lb_summary.configure(text= string_day)
 
 		def math_read_report():
 			cursor = conn.cursor()
@@ -1467,7 +1476,7 @@ def new_win():
 
 			file = filedialog.asksaveasfilename(title="Select file",initialfile="datafile.xlsx", defaultextension=".xlsx",filetypes=[("Execl file","*.xlsx")])
 
-			cols = ['Date','Time in','Time out','Late','Early Dismissal']
+			cols = ['Date','Subject','Class Schedule (Room)','Class','Start Time','End Time','Remark']
 			path = 'excelfile/read_data_employee_mathematics.csv'
 			excel_name = 'excelfile/new_datasave.xlsx'
 			lst = []
@@ -1502,6 +1511,38 @@ def new_win():
 			summary_department_combobox.configure(state='disabled')
 			employee_name_summary.configure(state='disabled')
 			employee_num_summary.configure(state='disabled')
+
+		# def count_data_report():
+		# 	smry_present = conn.cursor()
+		# 	smry_late = conn.cursor()
+		# 	smry_absent = conn.cursor()
+		# 	smry_earldis = conn.cursor()
+
+		# 	date_mathematics = date_lb_summary.cget("text")
+
+		# 	smry_present.execute("SELECT COUNT(Status) FROM attendance_record WHERE  Department='Mathematics' AND Status='Present' AND _Date='"+ str(date_mathematics) +"'")
+		# 	present_math = smry_present.fetchall()
+
+		# 	smry_late.execute("SELECT COUNT(Status) FROM attendance_record WHERE  Department='Mathematics' AND Status='Late' AND _Date='"+ str(date_mathematics) +"'")
+		# 	late_math = smry_late.fetchall()
+
+		# 	smry_absent.execute("SELECT COUNT(Status) FROM attendance_record WHERE Department='Mathematics' AND Status='Absent' AND _Date='"+ str(date_mathematics) +"'")
+		# 	absent_math = smry_absent.fetchall()
+
+		# 	smry_earldis.execute("SELECT COUNT(Status) FROM attendance_record WHERE Department='Mathematics' AND Status='Early Dismissal' AND _Date='"+ str(date_mathematics) +"'")
+		# 	earldis_math = smry_earldis.fetchall()
+
+		# 	num=1
+		# 	for i in range(0,num,1):
+		# 		storeval = present_math
+		# 		list.append(storeval)
+
+			# total_present_lb_summary.configure(text=present_math)
+			# total_late_lb_summary.configure(text=late_math)
+			# total_absent_lb_summary.configure(text=absent_math)
+			# total_earldis_lb_summary.configure(text=earldis_math)
+
+			# conn.commit()
 
 		         # Data Table "TreeView"
 		scrollbarx_summary = Scrollbar(popupwindow, orient=HORIZONTAL)
@@ -1555,6 +1596,10 @@ def new_win():
 		    # date Label
 		date_lb_summary = Label(popupwindow, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
 		date_lb_summary.place(x=580, y=10)
+
+		    # day Label
+		day_lb_summary = Label(popupwindow, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		day_lb_summary.place(x=670, y=10)
 
 		    # ComboBox College Department
 		summary_department_combobox = ttk.Combobox(popupwindow, state='disabled', values=["Mathematics", "ITE", "Psychology", "Applied Physics"])
@@ -1679,6 +1724,266 @@ def new_win():
 		popupwindow_psyc.summary_bg_img_lb = Label(popupwindow_psyc, image = popupwindow_psyc.photo)
 		popupwindow_psyc.summary_bg_img_lb.pack()
 
+		emp_num = employee_num_psyc.get()
+		emp_name = employee_name_psyc.get()
+
+		    # Get Current Time and Date
+		def time_report():
+			string_time = strftime('%I:%M:%S %p')
+			time_lb_summary_psyc.configure(text = string_time)
+			time_lb_summary_psyc.after(1000, time_report)
+
+			string_date = strftime('%d-%m-20%y')
+			date_lb_summary_psyc.configure(text = string_date)
+
+			string_day = strftime('%a')
+			day_lb_summary_psyc.configure(text= string_day)
+
+		def psyc_read_report():
+			cursor = conn.cursor()
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			results_report = cursor.fetchall()
+
+			conn.commit()
+			return results_report
+
+		def refreshTable_psyc_report():
+			for data_report in data_table_summary_psyc.get_children():
+				data_table_summary_psyc.delete(data_report)
+
+			for results_report in reverse(psyc_read_report()):
+				data_table_summary_psyc.insert(parent='', index='end', iid=results_report, text="", values=(results_report), tag="orow")
+			data_table_summary_psyc.tag_configure('orow', background='#EEEEEE')
+
+		def display_info():
+			Dept = conn.cursor()
+
+			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			dept = Dept.fetchone()
+
+			summary_department_combobox_psyc.configure(state='normal')
+			employee_num_summary_psyc.configure(state='normal')
+			employee_name_summary_psyc.configure(state='normal')
+			
+			summary_department_combobox_psyc.insert(0,dept)
+			employee_num_summary_psyc.insert(0,emp_num)
+			employee_name_summary_psyc.insert(0,emp_name)
+
+			summary_department_combobox_psyc.configure(state='disabled')
+			employee_num_summary_psyc.configure(state='disabled')
+			employee_name_summary_psyc.configure(state='disabled')
+
+			conn.commit()
+
+		def search_date_psyc():
+			date_psychology = dtr_summary_psyc.get()
+			employee_num_summary_psyc.configure(state='normal')
+			emplno = employee_num_summary_psyc.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_psyc.get_children():
+				data_table_summary_psyc.delete(record)
+            
+			consdate = '%' +date_psychology+'%'
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='Psychology' AND (_Date='"+ str(date_psychology) +"' or _Date LIKE '"+ str(consdate) +"')")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+				else:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+				count += 1
+				data_table_summary_psyc.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_psyc.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_psyc.configure(state='disabled')
+				summary_button_print1_psyc.configure(state='normal')
+				dtr_summary_psyc.delete(0,END)
+			employee_num_summary_psyc.configure(state='disabled')
+
+			conn.commit()
+
+		def search_present():
+			date_psychology = date_lb_summary_psyc.cget("text")
+			employee_num_summary_psyc.configure(state='normal')
+			emplno = employee_num_summary_psyc.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_psyc.get_children():
+				data_table_summary_psyc.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Present' AND _Date='"+ str(date_psychology) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_psyc.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_psyc.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_psyc.configure(state='disabled')
+				summary_button_print1_psyc.configure(state='disabled')
+			employee_num_summary_psyc.configure(state='disabled')
+			summary_button_print1_psyc.configure(state='disabled')
+
+			conn.commit()
+
+		def search_late():
+			date_psychology = date_lb_summary_psyc.cget("text")
+			employee_num_summary_psyc.configure(state='normal')
+			emplno = employee_num_summary_psyc.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_psyc.get_children():
+				data_table_summary_psyc.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Late' AND _Date='"+ str(date_psychology) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_psyc.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_psyc.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_psyc.configure(state='disabled')
+				summary_button_print1_psyc.configure(state='disabled')
+			employee_num_summary_psyc.configure(state='disabled')
+			summary_button_print1_psyc.configure(state='disabled')
+
+			conn.commit()
+
+		def search_absent():
+			date_psychology = date_lb_summary_psyc.cget("text")
+			employee_num_summary_psyc.configure(state='normal')
+			emplno = employee_num_summary_psyc.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_psyc.get_children():
+				data_table_summary_psyc.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Absent' AND _Date='"+ str(date_psychology) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_psyc.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_psyc.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_psyc.configure(state='disabled')
+				summary_button_print1_psyc.configure(state='disabled')
+			employee_num_summary_psyc.configure(state='disabled')
+			summary_button_print1_psyc.configure(state='disabled')
+
+			conn.commit()
+
+		def search_earlydismissal():
+			date_psychology = date_lb_summary_psyc.cget("text")
+			employee_num_summary_psyc.configure(state='normal')
+			emplno = employee_num_summary_psyc.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_psyc.get_children():
+				data_table_summary_psyc.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Early Dismissal' AND _Date='"+ str(date_psychology) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_psyc.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_psyc.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_psyc.configure(state='disabled')
+				summary_button_print1_psyc.configure(state='disabled')
+			employee_num_summary_psyc.configure(state='disabled')
+			summary_button_print1_psyc.configure(state='disabled')
+
+			conn.commit()
+
+		def print_data_psyc():
+			summary_department_combobox_psyc.configure(state='normal')
+			employee_name_summary_psyc.configure(state='normal')
+			employee_num_summary_psyc.configure(state='normal')
+
+			dep = summary_department_combobox_psyc.get()
+			name = employee_name_summary_psyc.get()
+			num = employee_num_summary_psyc.get()
+
+			file = filedialog.asksaveasfilename(title="Select file",initialfile="datafile.xlsx", defaultextension=".xlsx",filetypes=[("Execl file","*.xlsx")])
+
+			cols = ['Date','Subject','Class Schedule (Room)','Class','Start Time','End Time','Remark']
+			path = 'excelfile/read_data_employee_psychology.csv'
+			excel_name = 'excelfile/new_datasave_psychology.xlsx'
+			lst = []
+			with open(path,"w",newline='') as myfile:
+				csvwriter = csv.writer(myfile, delimiter=',')
+				for row_id in data_table_summary_psyc.get_children():
+					row = data_table_summary_psyc.item(row_id,'values')
+					lst.append(row)
+				lst = list(map(list,lst))
+				lst.insert(0,cols)
+				for row in lst:
+					csvwriter.writerow(row)
+
+			writer = pd.ExcelWriter(excel_name)
+			df = pd.read_csv(path)
+			df.to_excel(writer,'sheet1', startrow = 3, index = False)
+
+			workbook = writer.book
+			worksheet = writer.sheets['sheet1']
+			worksheet.write(0,0,'Departmet:  ' + dep, workbook.add_format({'bold': True}))
+			worksheet.write(1,0,'Name:  ' + name, workbook.add_format({'bold': True}))
+			worksheet.write(1,3,'Employee No:  ' + num, workbook.add_format({'bold': True}))
+
+			writer.save()
+			source = "excelfile/new_datasave_psychology.xlsx"
+			if file:
+				shutil.copy(source,file)
+				summary_button_print1_psyc.configure(state='disabled')
+			else:
+				messagebox.showinfo("Message", "You did not save the file!!")
+
+			summary_department_combobox_psyc.configure(state='disabled')
+			employee_name_summary_psyc.configure(state='disabled')
+			employee_num_summary_psyc.configure(state='disabled')
+
 		         # Data Table "TreeView"
 		scrollbarx_summary_psyc = Scrollbar(popupwindow_psyc, orient=HORIZONTAL)
 		scrollbarx_summary_psyc.place(x=500, y=579, width=367)
@@ -1715,6 +2020,28 @@ def new_win():
 		data_table_summary_psyc.heading("End Time", text="End Time", anchor=CENTER)
 		data_table_summary_psyc.heading("Remark", text="Remark", anchor=CENTER)
 
+		refreshTable_psyc_report()
+
+		    # Time Text
+		time_lb = Label(popupwindow_psyc, text='Time:', fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		time_lb.place(x=360, y=10)
+
+		    # date Text
+		date_lb = Label(popupwindow_psyc, text='Date:', fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		date_lb.place(x=530, y=10)
+
+		    # Time Label
+		time_lb_summary_psyc = Label(popupwindow_psyc, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		time_lb_summary_psyc.place(x=410, y=10)
+
+		    # date Label
+		date_lb_summary_psyc = Label(popupwindow_psyc, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		date_lb_summary_psyc.place(x=580, y=10)
+
+		    # Day Label
+		day_lb_summary_psyc = Label(popupwindow_psyc, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		day_lb_summary_psyc.place(x=670, y=10)
+
 		    # ComboBox College Department
 		summary_department_combobox_psyc = ttk.Combobox(popupwindow_psyc, state='disabled', values=["Mathematics", "ITE", "Psychology", "Applied Physics"])
 		summary_department_combobox_psyc.place(x=253, y=245, width=175)
@@ -1750,25 +2077,25 @@ def new_win():
 		    # Button Present
 		present_btn_summary_psyc = PhotoImage(file = "pic/btn_present.png")
 		summary_button_present_psyc = customtkinter.CTkButton(master=popupwindow_psyc,image=present_btn_summary_psyc, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_present')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_present)
 		summary_button_present_psyc.place(x=175, y=103, height=78,width=150)
 
 		    # Button Late
 		late_btn_summary_psyc = PhotoImage(file = "pic/btn_late.png")
 		summary_button_late_psyc = customtkinter.CTkButton(master=popupwindow_psyc,image=late_btn_summary_psyc, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_late')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_late)
 		summary_button_late_psyc.place(x=355, y=103, height=78,width=150)
 
 		    # Button Absent
 		absent_btn_summary_psyc = PhotoImage(file = "pic/btn_absent.png")
 		summary_button_absent_psyc = customtkinter.CTkButton(master=popupwindow_psyc,image=absent_btn_summary_psyc, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_absent')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_absent)
 		summary_button_absent_psyc.place(x=525, y=103, height=78,width=150)
 
 		    # Button Early Dismisal
 		ed_btn_summary_psyc = PhotoImage(file = "pic/btn_early_dis.png")
 		summary_button_ed_psyc = customtkinter.CTkButton(master=popupwindow_psyc,image=ed_btn_summary_psyc, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_earlydismissal')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_earlydismissal)
 		summary_button_ed_psyc.place(x=705, y=103, height=78,width=150)
 
 		    # Total Present Label
@@ -1790,25 +2117,28 @@ def new_win():
 		    # Print Button
 		print_btn_summary_psyc = PhotoImage(file = "pic/btn_print.png")
 		summary_button_print_psyc = customtkinter.CTkButton(master=popupwindow_psyc,image=print_btn_summary_psyc, text="",
-		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command='print_data_psyc')
+		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command=print_data_psyc)
 		summary_button_print_psyc.place(x=258, y=375, height=20,width=80)
 
 		    # Generate Button
 		generate_btn_summary_psyc = PhotoImage(file = "pic/btn_generate.png")
 		summary_button_generate_psyc = customtkinter.CTkButton(master=popupwindow_psyc,image=generate_btn_summary_psyc, text="",
-		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command='search_date_psyc')
+		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command=search_date_psyc)
 		summary_button_generate_psyc.place(x=258, y=468, height=20,width=80)
 
 		    # Print Button
 		summary_button_print1_psyc = customtkinter.CTkButton(master=popupwindow_psyc,state='disabled',image=print_btn_summary_psyc, text="",
-		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command='print_data_psyc')
+		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command=print_data_psyc)
 		summary_button_print1_psyc.place(x=358, y=468, height=20,width=80)
 
 		    # Show All Button
 		showall_btn_summary_psyc = PhotoImage(file = "pic/btn_showall_small.png")
 		summary_button_showall_psyc = customtkinter.CTkButton(master=popupwindow_psyc,image=showall_btn_summary_psyc, text="" ,
-		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command='refreshTable_psyc_report')
+		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_psyc_report)
 		summary_button_showall_psyc.place(x=650, y=598, height=20,width=90)
+
+		time_report()
+		display_info()
 
 	# ============= Applied Physics Summary Report ========================================================================================================================
 
@@ -1834,6 +2164,266 @@ def new_win():
 		popupwindow_applied.photo = ImageTk.PhotoImage(popupwindow_applied.summary_resize_image)
 		popupwindow_applied.summary_bg_img_lb = Label(popupwindow_applied, image = popupwindow_applied.photo)
 		popupwindow_applied.summary_bg_img_lb.pack()
+
+		emp_num = employee_num_applied.get()
+		emp_name = employee_name_applied.get()
+
+		def time_report():
+			string_time = strftime('%I:%M:%S %p')
+			time_lb_summary_applied.configure(text = string_time)
+			time_lb_summary_applied.after(1000, time_report)
+
+			string_date = strftime('%d-%m-20%y')
+			date_lb_summary_applied.configure(text = string_date)
+
+			string_day = strftime('%a')
+			day_lb_summary_applied.configure(text= string_day)
+
+		def applied_read_report():
+			cursor = conn.cursor()
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			results_report = cursor.fetchall()
+
+			conn.commit()
+			return results_report
+
+		def refreshTable_applied_report():
+			for data_report in data_table_summary_applied.get_children():
+				data_table_summary_applied.delete(data_report)
+
+			for results_report in reverse(applied_read_report()):
+				data_table_summary_applied.insert(parent='', index='end', iid=results_report, text="", values=(results_report), tag="orow")
+			data_table_summary_applied.tag_configure('orow', background='#EEEEEE')
+
+		def display_info():
+			Dept = conn.cursor()
+
+			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			dept = Dept.fetchone()
+
+			summary_department_combobox_applied.configure(state='normal')
+			employee_num_summary_applied.configure(state='normal')
+			employee_name_summary_applied.configure(state='normal')
+
+			summary_department_combobox_applied.insert(0,dept)
+			employee_num_summary_applied.insert(0,emp_num)
+			employee_name_summary_applied.insert(0,emp_name)
+			
+			summary_department_combobox_applied.configure(state='disabled')
+			employee_num_summary_applied.configure(state='disabled')
+			employee_name_summary_applied.configure(state='disabled')
+
+			conn.commit()
+
+		def search_date_applied():
+			date_physics= dtr_summary_applied.get()
+			employee_num_summary_applied.configure(state='normal')
+			emplno = employee_num_summary_applied.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_applied.get_children():
+				data_table_summary_applied.delete(record)
+
+			consdate = '%' +date_physics+'%'
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='Applied Physics' AND (_Date='"+ str(date_physics) +"' or _Date LIKE '"+ str(consdate) +"')")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_applied.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_applied.tag_configure('oddrow', background='#EEEEEE')
+				dtr_summary_applied.delete(0,END)
+				employee_num_summary_applied.configure(state='disabled')
+				summary_button_print1_applied.configure(state='normal')
+			employee_num_summary_applied.configure(state='disabled')
+
+			conn.commit()
+
+		def search_present():
+			date_physics = date_lb_summary_applied.cget("text")
+			employee_num_summary_applied.configure(state='normal')
+			emplno = employee_num_summary_applied.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_applied.get_children():
+				data_table_summary_applied.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Present' AND _Date='"+ str(date_physics) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_applied.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_applied.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_applied.configure(state='disabled')
+				summary_button_print1_applied.configure(state='disabled')
+			summary_button_print1_applied.configure(state='disabled')
+			employee_num_summary_applied.configure(state='disabled')
+
+			conn.commit()
+
+		def search_late():
+			date_physics = date_lb_summary_applied.cget("text")
+			employee_num_summary_applied.configure(state='normal')
+			emplno = employee_num_summary_applied.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_applied.get_children():
+				data_table_summary_applied.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Late' AND _Date='"+ str(date_physics) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_applied.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_applied.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_applied.configure(state='disabled')
+				summary_button_print1_applied.configure(state='disabled')
+			summary_button_print1_applied.configure(state='disabled')
+			employee_num_summary_applied.configure(state='disabled')
+
+			conn.commit()
+
+		def search_absent():
+			date_physics = date_lb_summary_applied.cget("text")
+			employee_num_summary_applied.configure(state='normal')
+			emplno = employee_num_summary_applied.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_applied.get_children():
+				data_table_summary_applied.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Absent' AND _Date='"+ str(date_physics) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_applied.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_applied.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_applied.configure(state='disabled')
+				summary_button_print1_applied.configure(state='disabled')
+			summary_button_print1_applied.configure(state='disabled')
+			employee_num_summary_applied.configure(state='disabled')
+
+			conn.commit()
+
+		def search_earlydismissal():
+			date_physics= date_lb_summary_applied.cget("text")
+			employee_num_summary_applied.configure(state='normal')
+			emplno = employee_num_summary_applied.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_applied.get_children():
+				data_table_summary_applied.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Early Dismissal' AND _Date='"+ str(date_physics) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_applied.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_applied.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_applied.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_applied.configure(state='disabled')
+				summary_button_print1_applied.configure(state='disabled')
+			summary_button_print1_applied.configure(state='disabled')
+			employee_num_summary_applied.configure(state='disabled')
+
+			conn.commit()
+
+		def print_data_applied():
+			summary_department_combobox_applied.configure(state='normal')
+			employee_name_summary_applied.configure(state='normal')
+			employee_num_summary_applied.configure(state='normal')
+
+			dep = summary_department_combobox_applied.get()
+			name = employee_name_summary_applied.get()
+			num = employee_num_summary_applied.get()
+
+			file = filedialog.asksaveasfilename(title="Select file",initialfile="datafile.xlsx", defaultextension=".xlsx",filetypes=[("Execl file","*.xlsx")])
+
+			cols = ['Date','Subject','Class Schedule (Room)','Class','Start Time','End Time','Remark']
+			path = 'excelfile/read_data_employee_appliedphysics.csv'
+			excel_name = 'excelfile/new_datasave_appliedphysics.xlsx'
+			lst = []
+			with open(path,"w",newline='') as myfile:
+				csvwriter = csv.writer(myfile, delimiter=',')
+				for row_id in data_table_summary_applied.get_children():
+					row = data_table_summary_applied.item(row_id,'values')
+					lst.append(row)
+				lst = list(map(list,lst))
+				lst.insert(0,cols)
+				for row in lst:
+					csvwriter.writerow(row)
+
+			writer = pd.ExcelWriter(excel_name)
+			df = pd.read_csv(path)
+			df.to_excel(writer,'sheet1', startrow = 3, index = False)
+
+			workbook = writer.book
+			worksheet = writer.sheets['sheet1']
+			worksheet.write(0,0,'Departmet:  ' + dep, workbook.add_format({'bold': True}))
+			worksheet.write(1,0,'Name:  ' + name, workbook.add_format({'bold': True}))
+			worksheet.write(1,3,'Employee No:  ' + num, workbook.add_format({'bold': True}))
+
+			writer.save()
+			source = "excelfile/new_datasave_appliedphysics.xlsx"
+			if file:
+				shutil.copy(source,file)
+				summary_button_print1_applied.configure(state='disabled')
+			else:
+				messagebox.showinfo("Message", "You did not save the file!!")
+
+			summary_department_combobox_applied.configure(state='disabled')
+			employee_name_summary_applied.configure(state='disabled')
+			employee_num_summary_applied.configure(state='disabled')
+
 
 		    # Data Table "TreeView"
 		scrollbarx_summary_applied = Scrollbar(popupwindow_applied, orient=HORIZONTAL)
@@ -1871,6 +2461,29 @@ def new_win():
 		data_table_summary_applied.heading("End Time", text="End Time", anchor=CENTER)
 		data_table_summary_applied.heading("Remark", text="Remark", anchor=CENTER)
 
+		refreshTable_applied_report()
+
+		    # Time Text
+		time_lb = Label(popupwindow_applied, text='Time:', fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		time_lb.place(x=360, y=10)
+
+		    # date Text
+		date_lb = Label(popupwindow_applied, text='Date:', fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		date_lb.place(x=530, y=10)
+
+		    # Time Label
+		time_lb_summary_applied = Label(popupwindow_applied, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		time_lb_summary_applied.place(x=410, y=10)
+
+		    # date Label
+		date_lb_summary_applied = Label(popupwindow_applied, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		date_lb_summary_applied.place(x=580, y=10)
+
+		    # Day Label
+		day_lb_summary_applied = Label(popupwindow_applied, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		day_lb_summary_applied.place(x=670, y=10)
+
+
 		# ComboBox College Department
 		summary_department_combobox_applied = ttk.Combobox(popupwindow_applied, state='disabled', values=["Mathematics", "ITE", "Psychology", "Applied Physics"])
 		summary_department_combobox_applied.place(x=253, y=245, width=175)
@@ -1906,25 +2519,25 @@ def new_win():
 		    # Button Present
 		present_btn_summary_applied = PhotoImage(file = "pic/btn_present.png")
 		summary_button_present_applied = customtkinter.CTkButton(master=popupwindow_applied,image=present_btn_summary_applied, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_present')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_present)
 		summary_button_present_applied.place(x=175, y=103, height=78,width=150)
 
 		    # Button Late
 		late_btn_summary_applied = PhotoImage(file = "pic/btn_late.png")
 		summary_button_late_applied = customtkinter.CTkButton(master=popupwindow_applied,image=late_btn_summary_applied, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_late')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_late)
 		summary_button_late_applied.place(x=355, y=103, height=78,width=150)
 
 		    # Button Absent
 		absent_btn_summary_applied = PhotoImage(file = "pic/btn_absent.png")
 		summary_button_absent_applied = customtkinter.CTkButton(master=popupwindow_applied,image=absent_btn_summary_applied, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_absent')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_absent)
 		summary_button_absent_applied.place(x=525, y=103, height=78,width=150)
 
 		    # Button Early Dismisal
 		ed_btn_summary_applied = PhotoImage(file = "pic/btn_early_dis.png")
 		summary_button_ed_applied = customtkinter.CTkButton(master=popupwindow_applied,image=ed_btn_summary_applied, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_earlydismissal')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_earlydismissal)
 		summary_button_ed_applied.place(x=705, y=103, height=78,width=150)
 
 		    # Total Present Label
@@ -1946,25 +2559,28 @@ def new_win():
 		    # Print Button
 		print_btn_summary_applied = PhotoImage(file = "pic/btn_print.png")
 		summary_button_print_applied = customtkinter.CTkButton(master=popupwindow_applied,image=print_btn_summary_applied, text="",
-		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command='print_data_applied')
+		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command=print_data_applied)
 		summary_button_print_applied.place(x=258, y=375, height=20,width=80)
 
 		    # Generate Button
 		generate_btn_summary_applied = PhotoImage(file = "pic/btn_generate.png")
 		summary_button_generate_applied = customtkinter.CTkButton(master=popupwindow_applied,image=generate_btn_summary_applied, text="",
-		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command='search_date_applied')
+		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command=search_date_applied)
 		summary_button_generate_applied.place(x=258, y=468, height=20,width=80)
 
 		    # Print Button
 		summary_button_print1_applied = customtkinter.CTkButton(master=popupwindow_applied,state='disabled',image=print_btn_summary_applied, text="",
-		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command='print_data_applied')
+		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command=print_data_applied)
 		summary_button_print1_applied.place(x=358, y=468, height=20,width=80)
 
 		    # Show All Button
 		showall_btn_summary_applied = PhotoImage(file = "pic/btn_showall_small.png")
 		summary_button_showall_applied = customtkinter.CTkButton(master=popupwindow_applied,image=showall_btn_summary_applied, text="" ,
-		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command='refreshTable_applied_report')
+		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_applied_report)
 		summary_button_showall_applied.place(x=650, y=598, height=20,width=90)
+
+		time_report()
+		display_info()
 
 	# ============= ITE Summary Report In Frame ========================================================================================================================
 
@@ -1991,6 +2607,264 @@ def new_win():
 		popupwindow_ite.summary_bg_img_lb = Label(popupwindow_ite, image = popupwindow_ite.photo)
 		popupwindow_ite.summary_bg_img_lb.pack()
 
+		emp_num = employee_num_ite.get()
+		emp_name = employee_name_ite.get()
+
+            # Get Current Time and Date
+		def time_report():
+			string_time = strftime('%I:%M:%S %p')
+			time_lb_summary_ite.configure(text = string_time)
+			time_lb_summary_ite.after(1000, time_report)
+
+			string_date = strftime('%d-%m-20%y')
+			date_lb_summary_ite.configure(text = string_date)
+
+			string_day = strftime('%a')
+			day_lb_summary_ite.configure(text= string_day)
+
+		def ite_read_report():
+			cursor = conn.cursor()
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			results_math_report = cursor.fetchall()
+
+			conn.commit()
+			return results_math_report
+
+		def refreshTable_ite_report():
+			for data_report in data_table_summary_ite.get_children():
+				data_table_summary_ite.delete(data_report)
+
+			for results_report in reverse(ite_read_report()):
+				data_table_summary_ite.insert(parent='', index='end', iid=results_report, text="", values=(results_report), tag="orow")
+			data_table_summary_ite.tag_configure('orow', background='#EEEEEE')
+
+		def display_info():
+			Dept = conn.cursor()
+
+			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			dept = Dept.fetchone()
+
+			summary_department_combobox_ite.configure(state='normal')
+			employee_num_summary_ite.configure(state='normal')
+			employee_name_summary_ite.configure(state='normal')
+
+			summary_department_combobox_ite.insert(0,dept)
+			employee_num_summary_ite.insert(0,emp_num)
+			employee_name_summary_ite.insert(0,emp_name)
+
+			summary_department_combobox_ite.configure(state='disabled')
+			employee_num_summary_ite.configure(state='disabled')
+			employee_name_summary_ite.configure(state='disabled')
+
+			conn.commit()
+
+		def search_date():
+			date_IT = dtr_summary_ite.get()
+			employee_num_summary_ite.configure(state='normal')
+			emplno = employee_num_summary_ite.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_ite.get_children():
+				data_table_summary_ite.delete(record)
+
+			consdate = '%' +date_IT+'%'
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='ITE' AND (_Date='"+ str(date_IT) +"' or _Date LIKE '"+ str(consdate) +"')")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_ite.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_ite.tag_configure('oddrow', background='#EEEEEE')
+				dtr_summary_ite.delete(0,END)
+				employee_num_summary_ite.configure(state='disabled')
+				summary_button_print1_ite.configure(state='normal')
+			employee_num_summary_ite.configure(state='disabled')
+
+			conn.commit()
+
+		def search_present():
+			date_IT = date_lb_summary_ite.cget("text")
+			employee_num_summary_ite.configure(state='normal')
+			emplno = employee_num_summary_ite.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_ite.get_children():
+				data_table_summary_ite.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Present' AND _Date='"+ str(date_IT) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_ite.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_ite.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_ite.configure(state='disabled')
+				summary_button_print1_ite.configure(state='disabled')
+			summary_button_print1_ite.configure(state='disabled')
+			employee_num_summary_ite.configure(state='disabled')
+
+			conn.commit()
+
+		def search_late():
+			date_IT = date_lb_summary_ite.cget("text")
+			employee_num_summary_ite.configure(state='normal')
+			emplno = employee_num_summary_ite.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_ite.get_children():
+				data_table_summary_ite.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Late' AND _Date='"+ str(date_IT) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_ite.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_ite.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_ite.configure(state='disabled')
+				summary_button_print1_ite.configure(state='disabled')
+			summary_button_print1_ite.configure(state='disabled')
+			employee_num_summary_ite.configure(state='disabled')
+
+			conn.commit()
+
+		def search_absent():
+			date_IT = date_lb_summary_ite.cget("text")
+			employee_num_summary_ite.configure(state='normal')
+			emplno = employee_num_summary_ite.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_ite.get_children():
+				data_table_summary_ite.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Absent' AND _Date='"+ str(date_IT) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_ite.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_ite.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_ite.configure(state='disabled')
+				summary_button_print1_ite.configure(state='disabled')
+			summary_button_print1_ite.configure(state='disabled')
+			employee_num_summary_ite.configure(state='disabled')
+
+			conn.commit()
+
+		def search_earlydismissal():
+			date_IT = date_lb_summary_ite.cget("text")
+			employee_num_summary_ite.configure(state='normal')
+			emplno = employee_num_summary_ite.get()
+
+			cursor = conn.cursor()
+
+			# Clear the Treeview
+			for record in data_table_summary_ite.get_children():
+				data_table_summary_ite.delete(record)
+
+			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Early Dismissal' AND _Date='"+ str(date_IT) +"'")
+			records = cursor.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
+				else:
+					data_table_summary_ite.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
+				count += 1
+				data_table_summary_ite.tag_configure('evenrow', background='#EEEEEE')
+				data_table_summary_ite.tag_configure('oddrow', background='#EEEEEE')
+				employee_num_summary_ite.configure(state='disabled')
+				summary_button_print1_ite.configure(state='disabled')
+			summary_button_print1_ite.configure(state='disabled')
+			employee_num_summary_ite.configure(state='disabled')
+
+			conn.commit()
+
+		def print_data_ite():
+			summary_department_combobox_ite.configure(state='normal')
+			employee_name_summary_ite.configure(state='normal')
+			employee_num_summary_ite.configure(state='normal')
+
+			dep = summary_department_combobox_ite.get()
+			name = employee_name_summary_ite.get()
+			num =employee_num_summary_ite.get()
+
+			file = filedialog.asksaveasfilename(title="Select file",initialfile="datafile.xlsx", defaultextension=".xlsx",filetypes=[("Execl file","*.xlsx")])
+
+			cols = ['Date','Subject','Class Schedule (Room)','Class','Start Time','End Time','Remark']
+			path = 'excelfile/read_data_employee_ite.csv'
+			excel_name = 'excelfile/new_datasave_ite.xlsx'
+			lst = []
+			with open(path,"w",newline='') as myfile:
+				csvwriter = csv.writer(myfile, delimiter=',')
+				for row_id in data_table_summary_ite.get_children():
+					row = data_table_summary_ite.item(row_id,'values')
+					lst.append(row)
+				lst = list(map(list,lst))
+				lst.insert(0,cols)
+				for row in lst:
+					csvwriter.writerow(row)
+
+			writer = pd.ExcelWriter(excel_name)
+			df = pd.read_csv(path)
+			df.to_excel(writer,'sheet1', startrow = 3, index = False)
+
+			workbook = writer.book
+			worksheet = writer.sheets['sheet1']
+			worksheet.write(0,0,'Departmet:  ' + dep, workbook.add_format({'bold': True}))
+			worksheet.write(1,0,'Name:  ' + name, workbook.add_format({'bold': True}))
+			worksheet.write(1,3,'Employee No:  ' + num, workbook.add_format({'bold': True}))
+
+			writer.save()
+			source = "excelfile/new_datasave_ite.xlsx"
+			if file:
+				shutil.copy(source,file)
+			else:
+				messagebox.showinfo("Message", "You did not save the file!!")
+
+			summary_department_combobox_ite.configure(state='disabled')
+			employee_name_summary_ite.configure(state='disabled')
+			employee_num_summary_ite.configure(state='disabled')
 
 		         # Data Table "TreeView"
 		scrollbarx_summary_ite = Scrollbar(popupwindow_ite, orient=HORIZONTAL)
@@ -2027,8 +2901,28 @@ def new_win():
 		data_table_summary_ite.heading("Start Time", text="Start Time", anchor=CENTER)
 		data_table_summary_ite.heading("End Time", text="End Time", anchor=CENTER)
 		data_table_summary_ite.heading("Remark", text="Remark", anchor=CENTER)
-		
 
+		refreshTable_ite_report()
+		
+		    # Time Text
+		time_lb = Label(popupwindow_ite, text='Time:', fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		time_lb.place(x=360, y=10)
+
+		    # date Text
+		date_lb = Label(popupwindow_ite, text='Date:', fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		date_lb.place(x=530, y=10)
+
+		    # Time Label
+		time_lb_summary_ite = Label(popupwindow_ite, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		time_lb_summary_ite.place(x=410, y=10)
+
+		    # date Label
+		date_lb_summary_ite = Label(popupwindow_ite, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		date_lb_summary_ite.place(x=580, y=10)
+
+		    # date Label
+		day_lb_summary_ite = Label(popupwindow_ite, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+		day_lb_summary_ite.place(x=670, y=10)
 
 		    # ComboBox College Department
 		summary_department_combobox_ite = ttk.Combobox(popupwindow_ite, state='disabled', values=["Mathematics", "ITE", "Psychology", "Applied Physics"])
@@ -2065,25 +2959,25 @@ def new_win():
 		    # Button Present
 		present_btn_summary_ite = PhotoImage(file = "pic/btn_present.png")
 		summary_button_present_ite = customtkinter.CTkButton(master=popupwindow_ite,image=present_btn_summary_ite, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_present')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_present)
 		summary_button_present_ite.place(x=175, y=103, height=78,width=150)
 
 		    # Button Late
 		late_btn_summary_ite = PhotoImage(file = "pic/btn_late.png")
 		summary_button_late_ite = customtkinter.CTkButton(master=popupwindow_ite,image=late_btn_summary_ite, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_late')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_late)
 		summary_button_late_ite.place(x=355, y=103, height=78,width=150)
 
 		    # Button Absent
 		absent_btn_summary_ite = PhotoImage(file = "pic/btn_absent.png")
 		summary_button_absent_ite = customtkinter.CTkButton(master=popupwindow_ite,image=absent_btn_summary_ite, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_absent')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_absent)
 		summary_button_absent_ite.place(x=525, y=103, height=78,width=150)
 
 		    # Button Early Dismisal
 		ed_btn_summary_ite = PhotoImage(file = "pic/btn_early_dis.png")
 		summary_button_ed_ite = customtkinter.CTkButton(master=popupwindow_ite,image=ed_btn_summary_ite, text="" ,
-		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_earlydismissal')
+		                                            corner_radius=10,bg_color='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_earlydismissal)
 		summary_button_ed_ite.place(x=705, y=103, height=78,width=150)
 
 		    # Total Present Label
@@ -2105,25 +2999,28 @@ def new_win():
 		    # Print Button
 		print_btn_summary_ite = PhotoImage(file = "pic/btn_print.png")
 		summary_button_print_ite = customtkinter.CTkButton(master=popupwindow_ite,image=print_btn_summary_ite, text="",
-		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command='print_data_ite')
+		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command=print_data_ite)
 		summary_button_print_ite.place(x=258, y=375, height=20,width=80)
 
 		    # Generate Button
 		generate_btn_summary_ite = PhotoImage(file = "pic/btn_generate.png")
 		summary_button_generate_ite = customtkinter.CTkButton(master=popupwindow_ite,image=generate_btn_summary_ite, text="",
-		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command='search_date')
+		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command=search_date)
 		summary_button_generate_ite.place(x=258, y=468, height=20,width=80)
 
 		    # Print Button
 		summary_button_print1_ite = customtkinter.CTkButton(master=popupwindow_ite,state='disabled',image=print_btn_summary_ite, text="",
-		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command='print_data_ite')
+		                                            corner_radius=3, fg_color="#00436e",hover_color="#006699", command=print_data_ite)
 		summary_button_print1_ite.place(x=358, y=468, height=20,width=80)
 
 		    # Show All Button
 		showall_btn_summary_ite = PhotoImage(file = "pic/btn_showall_small.png")
 		summary_button_showall_ite = customtkinter.CTkButton(master=popupwindow_ite,image=showall_btn_summary_ite, text="" ,
-		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command='refreshTable_ite_report')
+		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_ite_report)
 		summary_button_showall_ite.place(x=650, y=598, height=20,width=90)
+
+		time_report()
+		display_info()
 
 ############################################################################### Attentandance Rerord Part ###################################################################################################################################
 
