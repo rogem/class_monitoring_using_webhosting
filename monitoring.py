@@ -1284,7 +1284,7 @@ def new_win():
 				data_table_summary.insert(parent='', index='end', iid=results_math_rec_report, text="", values=(results_math_rec_report), tag="orow")
 			data_table_summary.tag_configure('orow', background='#EEEEEE')
 
-		def display_info():
+		def display_info_math():
 			Dept = conn.cursor()
 
 			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -1697,7 +1697,7 @@ def new_win():
 		summary_button_showall.place(x=650, y=598, height=20,width=90)
 
 		time_report()
-		display_info()
+		display_info_math()
 
 	# ============= Psychology Summary Report  ========================================================================================================================
 
@@ -1756,7 +1756,7 @@ def new_win():
 				data_table_summary_psyc.insert(parent='', index='end', iid=results_report, text="", values=(results_report), tag="orow")
 			data_table_summary_psyc.tag_configure('orow', background='#EEEEEE')
 
-		def display_info():
+		def display_info_psyc():
 			Dept = conn.cursor()
 
 			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -1796,9 +1796,9 @@ def new_win():
 
 			for record in records:
 				if count % 2 == 0:
-					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="evenrow")
 				else:
-					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+					data_table_summary_psyc.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tag="oddrow")
 				count += 1
 				data_table_summary_psyc.tag_configure('evenrow', background='#EEEEEE')
 				data_table_summary_psyc.tag_configure('oddrow', background='#EEEEEE')
@@ -2138,7 +2138,7 @@ def new_win():
 		summary_button_showall_psyc.place(x=650, y=598, height=20,width=90)
 
 		time_report()
-		display_info()
+		display_info_psyc()
 
 	# ============= Applied Physics Summary Report ========================================================================================================================
 
@@ -2196,7 +2196,7 @@ def new_win():
 				data_table_summary_applied.insert(parent='', index='end', iid=results_report, text="", values=(results_report), tag="orow")
 			data_table_summary_applied.tag_configure('orow', background='#EEEEEE')
 
-		def display_info():
+		def display_info_applied():
 			Dept = conn.cursor()
 
 			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -2580,7 +2580,7 @@ def new_win():
 		summary_button_showall_applied.place(x=650, y=598, height=20,width=90)
 
 		time_report()
-		display_info()
+		display_info_applied()
 
 	# ============= ITE Summary Report In Frame ========================================================================================================================
 
@@ -2639,7 +2639,7 @@ def new_win():
 				data_table_summary_ite.insert(parent='', index='end', iid=results_report, text="", values=(results_report), tag="orow")
 			data_table_summary_ite.tag_configure('orow', background='#EEEEEE')
 
-		def display_info():
+		def display_info_ite():
 			Dept = conn.cursor()
 
 			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -3020,7 +3020,7 @@ def new_win():
 		summary_button_showall_ite.place(x=650, y=598, height=20,width=90)
 
 		time_report()
-		display_info()
+		display_info_ite()
 
 ############################################################################### Attentandance Rerord Part ###################################################################################################################################
 
@@ -3351,10 +3351,21 @@ def new_win():
 	                                                corner_radius=3, fg_color="#00436e",hover_color="#006699", command=print_math)
 	math_rec_button_print.place(x=785, y=608, height=20,width=80)
 
+	def back_math():
+		employee_num_math_rec.configure(state='normal')
+		employee_name_math_rec.configure(state='normal')
+
+		employee_num_math_rec.delete(0,END)
+		employee_name_math_rec.delete(0,END)
+		show_frame(attendance_record)
+
+		employee_num_math_rec.configure(state='disabled')
+		employee_name_math_rec.configure(state='disabled')
+
 	    # Back Button
 	math_rec_back = PhotoImage(file = "pic/btn_back_page.png")
 	math_rec_button_back = customtkinter.CTkButton(master=mathematics_att_record,image=math_rec_back, text="" ,
-	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=lambda: show_frame(attendance_record))
+	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=back_math)
 	math_rec_button_back.place(x=45, y=595, height=50,width=140)
 
 	time_math()
@@ -3692,10 +3703,22 @@ def new_win():
 	                                                corner_radius=3, fg_color="#00436e",hover_color="#006699", command=print_psyc)
 	psyc_button_print.place(x=785, y=608, height=20,width=80)
 
+	def back_psyc():
+		employee_num_psyc.configure(state='normal')
+		employee_name_psyc.configure(state='normal')
+
+		employee_num_psyc.delete(0,END)
+		employee_name_psyc.delete(0,END)
+		show_frame(attendance_record)
+
+		employee_num_psyc.configure(state='disabled')
+		employee_name_psyc.configure(state='disabled')
+
+
 	    # Back Button
 	psyc_back = PhotoImage(file = "pic/btn_back_page.png")
 	psyc_button_back = customtkinter.CTkButton(master=psychology_att_record,image=psyc_back, text="" ,
-	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=lambda: show_frame(attendance_record))
+	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=back_psyc)
 	psyc_button_back.place(x=45, y=595, height=50,width=140)
 
 	time_psyc()
@@ -4031,10 +4054,21 @@ def new_win():
 	                                                corner_radius=3, fg_color="#00436e",hover_color="#006699", command=print_applied)
 	applied_button_print.place(x=785, y=608, height=20,width=80)
 
+	def back_applied():
+		employee_num_applied.configure(state='normal')
+		employee_name_applied.configure(state='normal')
+
+		employee_num_applied.delete(0,END)
+		employee_name_applied.delete(0,END)
+		show_frame(attendance_record)
+
+		employee_num_applied.configure(state='disabled')
+		employee_name_applied.configure(state='disabled')
+
 	    # Back Button
 	applied_back = PhotoImage(file = "pic/btn_back_page.png")
 	applied_button_back = customtkinter.CTkButton(master=applied_physics_att_record,image=applied_back, text="" ,
-	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=lambda: show_frame(attendance_record))
+	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=back_applied)
 	applied_button_back.place(x=45, y=595, height=50,width=140)
 
 	time_applied()
@@ -4374,10 +4408,21 @@ def new_win():
 	                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_ite)
 	ite_button_showall.place(x=885, y=608, height=21,width=90)
 
+	def back_ite():
+		employee_num_ite.configure(state='normal')
+		employee_name_ite.configure(state='normal')
+
+		employee_num_ite.delete(0,END)
+		employee_name_ite.delete(0,END)
+		show_frame(attendance_record)
+
+		employee_num_ite.configure(state='disabled')
+		employee_name_ite.configure(state='disabled')
+
 	    # Back Button
 	ite_back = PhotoImage(file = "pic/btn_back_page.png")
 	ite_button_back = customtkinter.CTkButton(master=ite_att_record,image=ite_back, text="" ,
-	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=lambda: show_frame(attendance_record))
+	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=back_ite)
 	ite_button_back.place(x=45, y=595, height=50,width=140)
 
 	time_ite()
