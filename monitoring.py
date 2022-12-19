@@ -1318,7 +1318,7 @@ def new_win():
 		refreshTable_account()
 
 	    # Updating Selected Data
-	def Update_Data_facultyinfo():
+	def Update_Data_acc():
 		position_create.configure(state='normal')
 
 		username = username_create.get()
@@ -1355,12 +1355,12 @@ def new_win():
 
 		if status == 'Activated':
 			messagebox.showinfo("Messgae", "Status Activated!!")
-			reset_acc()
+			# reset_acc()
 			refreshTable_account()
 		elif status == 'Deactivated':
 			messagebox.showinfo("Messgae", "Status Deactivated!!")
 			refreshTable_account()
-			reset_acc()
+			# reset_acc()
 
 		refreshTable_account()
 		conn.commit()
@@ -1447,7 +1447,7 @@ def new_win():
 		# Update Button
 	update_acc_btn = PhotoImage(file = "pic/btn_acc_update.png")
 	update_button_account = customtkinter.CTkButton(master=create_account,state='disabled',image=update_acc_btn, text="",
-	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
+	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command=Update_Data_acc)
 	update_button_account.place(x=375, y=555, height=38,width=135)
 
 		# Reset Button
