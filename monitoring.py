@@ -21,8 +21,8 @@ attemptadmin = 0
 attempuser= 0
 sched_id = 0
 
-conn = mysql.connect(host='sql6.freemysqlhosting.net',port='3306', database='sql6584558', user='sql6584558', password='ZalIZx2tmG')
-			
+# conn = mysql.connect(host='sql6.freemysqlhosting.net',port='3306', database='sql6584558', user='sql6584558', password='ZalIZx2tmG')
+conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 w=Tk()
 
@@ -158,7 +158,7 @@ def new_win():
 	def show_frame(frame):
 		frame.tkraise()
 
-	show_frame(attendance_record)
+	show_frame(page4)
 
     # ============= Page 1 Frame =========================================================================================================================================
 	def reverse(tuples):
@@ -213,7 +213,7 @@ def new_win():
 		
 		cursor = conn.cursor()
 
-		cursor.execute("SELECT * FROM faculty_data WHERE Username = '" + str(Username) + "'")
+		cursor.execute("SELECT * FROM account_data WHERE Username = '" + str(Username) + "'")
 		records = cursor.fetchone()
 
 		if records is not None:
@@ -228,7 +228,7 @@ def new_win():
 		
 		cursor = conn.cursor()
 
-		cursor.execute("SELECT * FROM faculty_data WHERE Password = '" + str(Password) + "'")
+		cursor.execute("SELECT * FROM account_data WHERE Password = '" + str(Password) + "'")
 		records = cursor.fetchone()
 
 		if records is not None:
@@ -239,11 +239,12 @@ def new_win():
 		conn.commit()
 
 	def verify_admin():
+		cursor = conn.cursor()
+		getinact = conn.cursor()
 		try:
 			if conn.is_connected():
 			    
-				cursor = conn.cursor()
-				getinact = conn.cursor()
+				
 
 				# cursor.execute("""CREATE TABLE IF NOT EXISTS  `faculty_data` (
 				# 						  `ID` int(11) NOT NULL,
@@ -263,13 +264,13 @@ def new_win():
 				pwd = pg3_txtbox_pass.get()
 				state = "Activated"
 
-				getinact.execute("SELECT * FROM faculty_data WHERE Username = '" + str(uname) + "' AND  Password = '" + str(pwd) + "' AND Status ='Deactivated'")
+				getinact.execute("SELECT * FROM account_data WHERE Username = '" + str(uname) + "' AND  Password = '" + str(pwd) + "' AND Status ='Deactivated'")
 				inactive = getinact.fetchone()
 
 				if uname=='' or pwd=='':
 					messagebox.showinfo("Error", "Please Fill The Empty Field!!")
 				elif attemptadmin >=0 and attemptadmin <=2:
-					cursor.execute("SELECT * FROM faculty_data WHERE Username = '" + str(uname) + "' AND  Password = '" + str(pwd) + "' AND Status ='" + str(state) + "'")
+					cursor.execute("SELECT * FROM account_data WHERE Username = '" + str(uname) + "' AND  Password = '" + str(pwd) + "' AND Status ='" + str(state) + "'")
 					if cursor.fetchone():
 						show_frame(page4)
 						messagebox.showinfo("Messgae", "WELCOME USER")
@@ -313,7 +314,6 @@ def new_win():
 		
 
 		conn.commit()
-		conn.close()
 		# try:
 		# 	if conn.is_connected():
 		# 	    db_Info = conn.get_server_info()
@@ -790,16 +790,16 @@ def new_win():
 		add_button_fac_inf.configure(state='normal')
 		button_update.configure(state='disabled')
 		department_combobox.configure(state='normal')
-		status_combobox_fac_inf.configure(state='normal')
+		# status_combobox_fac_inf.configure(state='normal')
 
 		department_combobox.delete(0, END)
 		employee_num_fac_inf.delete(0, END)
 		employee_name_fac_inf.delete(0, END)
 		department_combobox.delete(0, END)
-		status_combobox_fac_inf.delete(0,END)
+		# status_combobox_fac_inf.delete(0,END)
 
 		department_combobox.configure(state='readonly')
-		status_combobox_fac_inf.configure(state='disabled')
+		# status_combobox_fac_inf.configure(state='disabled')
 		loads_button_fac_inf.configure(state='disabled')
 
 		# Select Row from Table
@@ -813,16 +813,16 @@ def new_win():
 			add_button_fac_inf.configure(state='disabled')
 			button_update.configure(state='normal')
 			department_combobox.configure(state='normal')
-			status_combobox_fac_inf.configure(state='normal')
+			# status_combobox_fac_inf.configure(state='normal')
 
 
 			employee_num_fac_inf.insert(0, values[0])
 			employee_name_fac_inf.insert(0, values[1])
 			department_combobox.insert(0, values[2])
-			status_combobox_fac_inf.insert(0,values[3])
+			# status_combobox_fac_inf.insert(0,values[3])
 
 			department_combobox.configure(state='readonly')
-			status_combobox_fac_inf.configure(state='readonly')
+			# status_combobox_fac_inf.configure(state='readonly')
 			loads_button_fac_inf.configure(state='normal')
             
 		else:
@@ -832,7 +832,7 @@ def new_win():
 	def read():
 		cursor = conn.cursor()
 
-		cursor.execute("SELECT Employee_Number,Employee_Name,Department,Status FROM faculty_data")
+		cursor.execute("SELECT Employee_Number,Employee_Name,Department FROM faculty_data")
 		results = cursor.fetchall()
 		conn.commit()
 		return results
@@ -868,7 +868,7 @@ def new_win():
 		save_college_department = department_combobox.get()
 		save_employee_number = employee_num_fac_inf.get()
 		save_employee_name = employee_name_fac_inf.get()
-		save_status = 'Activated'
+		# save_status = 'Activated'
 
 		save_facutyinfo = conn.cursor()
 
@@ -885,9 +885,9 @@ def new_win():
 			else:
 				clear_facultyinfo()
 
-				insertdata = str(save_employee_number),str(save_employee_name),str(save_college_department),str(save_status),'none','none'
-				save_facutyinfo.execute("""INSERT INTO faculty_data (Employee_Number,Employee_Name,Department,Status,Username,Password) 
-											VAlUES(%s,%s,%s,%s,%s,%s)""", insertdata)
+				insertdata = str(save_employee_number),str(save_employee_name),str(save_college_department)
+				save_facutyinfo.execute("""INSERT INTO faculty_data (Employee_Number,Employee_Name,Department) 
+											VAlUES(%s,%s,%s)""", insertdata)
 
 				loads_button_fac_inf.configure(state='disabled')
 				refreshTable_facultyinfo()
@@ -908,7 +908,7 @@ def new_win():
 					facultyinfo_table.delete(record)
 
 				lk_rec = '%' + lookup_record + '%'
-				curs.execute("SELECT Employee_Number,Employee_Name,Department,Status FROM faculty_data WHERE Employee_Number LIKE '" + str(lk_rec) + "' or  Employee_Name LIKE '" + str(lk_rec) + "' or  Department LIKE '" + str(lk_rec) + "' or Status LIKE '" + str(lk_rec) + "'")
+				curs.execute("SELECT Employee_Number,Employee_Name,Department FROM faculty_data WHERE Employee_Number LIKE '" + str(lk_rec) + "' or  Employee_Name LIKE '" + str(lk_rec) + "' or  Department LIKE '" + str(lk_rec) + "'")
 				records = curs.fetchall()
 
 				global count
@@ -932,12 +932,12 @@ def new_win():
         # Updating Selected Data
 	def Update_Data_facultyinfo():
 		department_combobox.configure(state='normal')
-		status_combobox_fac_inf.configure(state='normal')
+		# status_combobox_fac_inf.configure(state='normal')
 
 		save_employee_number = employee_num_fac_inf.get()
 		save_employee_name = employee_name_fac_inf.get()
 		save_college_department = department_combobox.get()
-		save_status = status_combobox_fac_inf.get()
+		# save_status = status_combobox_fac_inf.get()
 
 		if save_employee_number == "" or save_employee_name == "" or save_college_department == "":
 			messagebox.showinfo("Error", "Please fill up the blank entry!!")
@@ -949,7 +949,7 @@ def new_win():
 			conn.commit()
 
 			department_combobox.configure(state='readonly')
-			status_combobox_fac_inf.configure(state='disabled')
+			# status_combobox_fac_inf.configure(state='disabled')
 			loads_button_fac_inf.configure(state='disabled')
 			button_update.configure(state='disabled')
 			clear_facultyinfo()
@@ -972,19 +972,19 @@ def new_win():
 	scrollbarx_facultyinfo.configure(command=facultyinfo_table.xview)
 	scrollbary_facultyinfo.configure(command=facultyinfo_table.yview)
 
-	facultyinfo_table['columns'] = ("Employee No.","Employee Name","College Department","Status")
+	facultyinfo_table['columns'] = ("Employee No.","Employee Name","College Department")
 	# Format Columns
 	facultyinfo_table.column("#0", width=0, stretch=NO)
 	facultyinfo_table.column("Employee No.", anchor=CENTER, width=50)
 	facultyinfo_table.column("Employee Name", anchor=CENTER, width=50)
 	facultyinfo_table.column("College Department", anchor=CENTER, width=50)
-	facultyinfo_table.column("Status", anchor=CENTER, width=30)
+	# facultyinfo_table.column("Status", anchor=CENTER, width=30)
 
 	# Create Headings
 	facultyinfo_table.heading("Employee No.", text="Employee No.", anchor=CENTER)
 	facultyinfo_table.heading("Employee Name", text="Employee Name", anchor=CENTER)
 	facultyinfo_table.heading("College Department", text="College Department", anchor=CENTER)
-	facultyinfo_table.heading("Status", text="Status", anchor=CENTER)
+	# facultyinfo_table.heading("Status", text="Status", anchor=CENTER)
 
 	facultyinfo_table.bind("<ButtonRelease-1>", select_row_facultyinfo)
 
@@ -1004,9 +1004,9 @@ def new_win():
 	employee_name_fac_inf.place(x=385, y=314, width=150, height=22)
 
 	    # Entry Status
-	status_combobox_fac_inf = ttk.Combobox(faculty_information, font="Heltvetica 13",state='disabled', values=["Activated", "Deactivated"])
+	# status_combobox_fac_inf = ttk.Combobox(faculty_information, font="Heltvetica 13",state='disabled', values=["Activated", "Deactivated"])
 	# status_combobox_fac_inf.bind("<<ComboboxSelected>>", combobox_event)
-	status_combobox_fac_inf.place(x=385, y=346, width=150, height=22)
+	# status_combobox_fac_inf.place(x=385, y=346, width=150, height=22)
 
 	    # Search Entry
 	search_ent_val = StringVar()
@@ -1057,7 +1057,7 @@ def new_win():
 	                                            corner_radius=20,bg_color='#ffffff', fg_color="#fcd24f",hover_color="#006699", command=lambda: show_frame(page4))
 	fac_inf_button_back.place(x=20, y=595, height=50,width=140)
 
-############################################################################### Class Momitoring Part ###################################################################################################################################
+############################################################################### Class Monitoring Part ###################################################################################################################################
 
 
 	# ============= Class Monitoring Frame ========================================================================================================================
@@ -1069,41 +1069,67 @@ def new_win():
 	class_moniroting.mntoring_bg_img_lb = Label(class_moniroting, image = class_moniroting.photo)
 	class_moniroting.mntoring_bg_img_lb.pack()
 
+	def class_monitoring_read():
+		cursor = conn.cursor()
+
+		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record ")
+		results_class_monitoring= cursor.fetchall()
+
+		conn.commit()
+		return results_class_monitoring
+
+	def refreshTable_class_monitring():
+		for data_class_monitoring in data_table_mntoring.get_children():
+			data_table_mntoring.delete(data_class_monitoring)
+
+		for results_monitoring in reverse(class_monitoring_read()):
+			data_table_mntoring.insert(parent='', index='end', iid=results_monitoring, text="", values=(results_monitoring), tag="orow")
+		data_table_mntoring.tag_configure('orow', background='#EEEEEE')
+
 		# Data Table "TreeView"
 	scrollbary_mntoring = Scrollbar(class_moniroting, orient=VERTICAL)
 	scrollbary_mntoring.place(x=1110, y=170, height=350)
+	scrollbarx_mntoring = Scrollbar(class_moniroting, orient=HORIZONTAL)
+	scrollbarx_mntoring.place(x=220, y=521, width=890)
 
 	# style = ttk.Style()
 	# style.configure("Treeview.Heading", font=("yu gothic ui", 10, "bold"))
 
 	data_table_mntoring = ttk.Treeview(class_moniroting)
 	data_table_mntoring.place(x=220, y=170, width=890, height=350)
-	data_table_mntoring.configure(yscrollcommand=scrollbary_mntoring.set)
+	data_table_mntoring.configure(yscrollcommand=scrollbary_mntoring.set,xscrollcommand=scrollbarx_mntoring.set)
 
 	scrollbary_mntoring.configure(command=data_table_mntoring.yview)
+	scrollbarx_mntoring.configure(command=data_table_mntoring.xview)
 
-	data_table_mntoring['columns'] = ("Date","Employee ID","Name","Room","Subject","Start Time","End TIme","Remark")
+	data_table_mntoring['columns'] = ("Date","Employee ID","Name","Department","Subject","Class Schedule (Room)","Class","Start Time","End Time","Remark")
 	# Format Columns
 	data_table_mntoring.column("#0", width=0, stretch=NO)
-	data_table_mntoring.column("Date", anchor=CENTER, width=50)
-	data_table_mntoring.column("Employee ID", anchor=CENTER, width=50)
-	data_table_mntoring.column("Name", anchor=CENTER, width=50)
-	data_table_mntoring.column("Room", anchor=CENTER, width=50)
-	data_table_mntoring.column("Subject", anchor=CENTER, width=50)
-	data_table_mntoring.column("Start Time", anchor=CENTER, width=50)
-	data_table_mntoring.column("End TIme", anchor=CENTER, width=50)
-	data_table_mntoring.column("Remark", anchor=CENTER, width=50)
-
+	data_table_mntoring.column("Date", anchor=CENTER, width=100)
+	data_table_mntoring.column("Employee ID", anchor=CENTER, width=100)
+	data_table_mntoring.column("Name", anchor=CENTER, width=100)
+	data_table_mntoring.column("Department", anchor=CENTER, width=100)
+	data_table_mntoring.column("Date", anchor=CENTER, width=100)
+	data_table_mntoring.column("Subject", anchor=CENTER, width=100)
+	data_table_mntoring.column("Class Schedule (Room)", anchor=CENTER, width=200)
+	data_table_mntoring.column("Class", anchor=CENTER, width=100)
+	data_table_mntoring.column("Start Time", anchor=CENTER, width=100)
+	data_table_mntoring.column("End Time", anchor=CENTER, width=100)
+	data_table_mntoring.column("Remark", anchor=CENTER, width=100)
+	
 	# Create Headings
 	data_table_mntoring.heading("Date", text="Date", anchor=CENTER)
 	data_table_mntoring.heading("Employee ID", text="Employee ID", anchor=CENTER)
 	data_table_mntoring.heading("Name", text="Name", anchor=CENTER)
-	data_table_mntoring.heading("Room", text="Room", anchor=CENTER)
+	data_table_mntoring.heading("Department", text="Department", anchor=CENTER)
 	data_table_mntoring.heading("Subject", text="Subject", anchor=CENTER)
+	data_table_mntoring.heading("Class Schedule (Room)", text="Class Schedule (Room)", anchor=CENTER)
+	data_table_mntoring.heading("Class", text="Class", anchor=CENTER)
 	data_table_mntoring.heading("Start Time", text="Start Time", anchor=CENTER)
-	data_table_mntoring.heading("Start Time", text="Start Time", anchor=CENTER)
-	data_table_mntoring.heading("End TIme", text="End TIme", anchor=CENTER)
+	data_table_mntoring.heading("End Time", text="End Time", anchor=CENTER)
 	data_table_mntoring.heading("Remark", text="Remark", anchor=CENTER)
+
+	refreshTable_class_monitring()
 
 		# Search Entry
 	search_entry_mntoring = StringVar()
@@ -1119,8 +1145,8 @@ def new_win():
 	    # Show All Button
 	showall_btn_mntoring = PhotoImage(file = "pic/btn_showall.png")
 	mntoring_button_showall = customtkinter.CTkButton(master=class_moniroting,image=showall_btn_mntoring, text="" ,
-	                                            corner_radius=10,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command='refreshTable_log')
-	mntoring_button_showall.place(x=599, y=525, height=30,width=150)
+	                                            corner_radius=10,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_class_monitring)
+	mntoring_button_showall.place(x=599, y=540, height=30,width=150)
 
 	    # Back Button
 	mntoring_back = PhotoImage(file = "pic/btn_back_page.png")
@@ -1250,6 +1276,9 @@ def new_win():
 		popupwindow.photo = ImageTk.PhotoImage(popupwindow.summary_resize_image)
 		popupwindow.summary_bg_img_lb = Label(popupwindow, image = popupwindow.photo)
 		popupwindow.summary_bg_img_lb.pack()
+
+		employee_num_math_rec.configure(state='normal')
+		employee_name_math_rec.configure(state='normal')
 
 		emp_num = employee_num_math_rec.get()
 		emp_name = employee_name_math_rec.get()
@@ -1696,6 +1725,9 @@ def new_win():
 		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_math_report)
 		summary_button_showall.place(x=650, y=598, height=20,width=90)
 
+		employee_num_math_rec.configure(state='disabled')
+		employee_name_math_rec.configure(state='disabled')
+
 		time_report()
 		display_info_math()
 
@@ -1723,6 +1755,9 @@ def new_win():
 		popupwindow_psyc.photo = ImageTk.PhotoImage(popupwindow_psyc.summary_resize_image)
 		popupwindow_psyc.summary_bg_img_lb = Label(popupwindow_psyc, image = popupwindow_psyc.photo)
 		popupwindow_psyc.summary_bg_img_lb.pack()
+
+		employee_num_psyc.configure(state='normal')
+		employee_name_psyc.configure(state='normal')
 
 		emp_num = employee_num_psyc.get()
 		emp_name = employee_name_psyc.get()
@@ -2137,6 +2172,9 @@ def new_win():
 		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_psyc_report)
 		summary_button_showall_psyc.place(x=650, y=598, height=20,width=90)
 
+		employee_num_psyc.configure(state='disabled')
+		employee_name_psyc.configure(state='disabled')
+
 		time_report()
 		display_info_psyc()
 
@@ -2164,6 +2202,9 @@ def new_win():
 		popupwindow_applied.photo = ImageTk.PhotoImage(popupwindow_applied.summary_resize_image)
 		popupwindow_applied.summary_bg_img_lb = Label(popupwindow_applied, image = popupwindow_applied.photo)
 		popupwindow_applied.summary_bg_img_lb.pack()
+
+		employee_num_applied.configure(state='normal')
+		employee_name_applied.configure(state='normal')
 
 		emp_num = employee_num_applied.get()
 		emp_name = employee_name_applied.get()
@@ -2579,6 +2620,9 @@ def new_win():
 		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_applied_report)
 		summary_button_showall_applied.place(x=650, y=598, height=20,width=90)
 
+		employee_num_applied.configure(state='disabled')
+		employee_name_applied.configure(state='disabled')
+
 		time_report()
 		display_info_applied()
 
@@ -2606,6 +2650,9 @@ def new_win():
 		popupwindow_ite.photo = ImageTk.PhotoImage(popupwindow_ite.summary_resize_image)
 		popupwindow_ite.summary_bg_img_lb = Label(popupwindow_ite, image = popupwindow_ite.photo)
 		popupwindow_ite.summary_bg_img_lb.pack()
+
+		employee_num_ite.configure(state='normal')
+		employee_name_ite.configure(state='normal')
 
 		emp_num = employee_num_ite.get()
 		emp_name = employee_name_ite.get()
@@ -3018,6 +3065,9 @@ def new_win():
 		summary_button_showall_ite = customtkinter.CTkButton(master=popupwindow_ite,image=showall_btn_summary_ite, text="" ,
 		                                            corner_radius=3,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=refreshTable_ite_report)
 		summary_button_showall_ite.place(x=650, y=598, height=20,width=90)
+
+		employee_num_ite.configure(state='disabled')
+		employee_name_ite.configure(state='disabled')
 
 		time_report()
 		display_info_ite()
