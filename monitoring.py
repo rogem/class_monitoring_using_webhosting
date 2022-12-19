@@ -1317,6 +1317,55 @@ def new_win():
 		
 		refreshTable_account()
 
+	    # Updating Selected Data
+	def Update_Data_facultyinfo():
+		position_create.configure(state='normal')
+
+		username = username_create.get()
+		password = password_create.get()
+		verify_pass = re_password_create.get()
+		position = position_create.get()
+
+		if username == "" or password == "" or verify_pass == "" or position == "":
+			messagebox.showinfo("Message", "Please fill up the blank entry!!")
+			return
+		elif password != verify_pass:
+			messagebox.showerror("Meaage" , "Password & Confirm Password Should Be Same")
+			return
+		else:
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
+			update_acc = conn.cursor()
+			update_acc.execute("UPDATE account_data SET Username= '" + str(username) + "', Password = '" + str(password) + "', Position = '" + str(position) + "'")
+			conn.commit()
+
+			reset_acc()
+			refreshTable_account()
+			messagebox.showinfo("Messgae", "Data Updated!!")
+
+	def combobox_event(event):
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+		get_user = conn.cursor()
+
+		status = status_create.get()
+		username = username_create.get()
+		password = password_create.get()
+
+		get_user.execute("UPDATE account_data SET  Status = '" + str(status) + "' WHERE Username = '"+ str(username)+"' AND Password = '"+ str(password)+"'")
+
+		if status == 'Activated':
+			messagebox.showinfo("Messgae", "Status Activated!!")
+			reset_acc()
+			refreshTable_account()
+		elif status == 'Deactivated':
+			messagebox.showinfo("Messgae", "Status Deactivated!!")
+			refreshTable_account()
+			reset_acc()
+
+		refreshTable_account()
+		conn.commit()
+		# conn.close()
+
 
 	     # Data Table "TreeView"
 	scrollbarx_account = Scrollbar(create_account, orient=HORIZONTAL)
@@ -1386,6 +1435,7 @@ def new_win():
 
 	    # Entry Status
 	status_create = ttk.Combobox(create_account,state='disabled', values=["Activated", "Deactivated"])
+	status_create.bind("<<ComboboxSelected>>", combobox_event)
 	status_create.place(x=345, y=511, width=160, height=25)
 
 		# Create Button
