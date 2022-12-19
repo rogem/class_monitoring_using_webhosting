@@ -1262,13 +1262,19 @@ def new_win():
 	create_update_btn = PhotoImage(file = "pic/btn_acc_create.png")
 	create_button_update = customtkinter.CTkButton(master=create_account,image=create_update_btn, text="",
 	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
-	create_button_update.place(x=250, y=555, height=38,width=160)
+	create_button_update.place(x=218, y=555, height=38,width=135)
 
 		# Update Button
 	create_acc_btn = PhotoImage(file = "pic/btn_acc_update.png")
 	create_acc_update = customtkinter.CTkButton(master=create_account,image=create_acc_btn, text="",
 	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
-	create_acc_update.place(x=465, y=555, height=38,width=160)
+	create_acc_update.place(x=375, y=555, height=38,width=135)
+
+		# Reset Button
+	reset_acc_btn = PhotoImage(file = "pic/btn_acc_reset.png")
+	reset_acc_update = customtkinter.CTkButton(master=create_account,image=reset_acc_btn, text="",
+	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
+	reset_acc_update.place(x=532, y=555, height=38,width=135)
 
 	    # Search Entry
 	search_create_val = StringVar()
