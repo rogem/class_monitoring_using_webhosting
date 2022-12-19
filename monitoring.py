@@ -1234,17 +1234,25 @@ def new_win():
 	re_password_create = Entry(create_account, font="Heltvetica 13 bold")
 	re_password_create.place(x=455, y=425, width=160, height=25)
 
+	    # Entry Position
+	position_create = Entry(create_account, font="Heltvetica 13 bold")
+	position_create.place(x=345, y=472, width=160, height=25)
+
+	    # Entry Status
+	status_create = Entry(create_account, font="Heltvetica 13 bold")
+	status_create.place(x=345, y=511, width=160, height=25)
+
 		# Create Button
 	create_update_btn = PhotoImage(file = "pic/btn_acc_create.png")
 	create_button_update = customtkinter.CTkButton(master=create_account,image=create_update_btn, text="",
 	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
-	create_button_update.place(x=250, y=522, height=38,width=160)
+	create_button_update.place(x=250, y=555, height=38,width=160)
 
 		# Update Button
 	create_acc_btn = PhotoImage(file = "pic/btn_acc_update.png")
 	create_acc_update = customtkinter.CTkButton(master=create_account,image=create_acc_btn, text="",
 	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
-	create_acc_update.place(x=465, y=522, height=38,width=160)
+	create_acc_update.place(x=465, y=555, height=38,width=160)
 
 	    # Search Entry
 	search_create_val = StringVar()
