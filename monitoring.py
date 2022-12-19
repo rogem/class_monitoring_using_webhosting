@@ -1207,18 +1207,47 @@ def new_win():
 		account_table.tag_configure('orow', background='#EEEEEE')
 
 	def reset_acc():
+		status_create.configure(state='normal')
 		position_create.configure(state='normal')
 
 		username_create.delete(0,END)
 		password_create.delete(0,END)
 		re_password_create.delete(0,END)
 		position_create.delete(0,END)
+		status_create.delete(0,END)
 
 		pass_check_button.deselect()
 		re_pass_check_button.deselect()
 
 		position_create.configure(state='readonly')
-		create_acc_update.configure(state='disabled')
+		update_button_account.configure(state='disabled')
+		status_create.configure(state='disabled')
+
+	def select_row_acc(e):
+		reset_acc()
+
+		selected = account_table.focus()
+		values = account_table.item(selected, 'values')
+
+		if values:
+			status_create.configure(state='normal')
+			update_button_account.configure(state='normal')
+			position_create.configure(state='normal')
+
+			username_create.insert(0, values[0])
+			password_create.insert(0, values[1])
+			position_create.insert(0, values[2])
+			status_create.insert(0, values[3])
+
+			pass_check_button.deselect()
+			re_pass_check_button.deselect()
+
+			position_create.configure(state='readonly')
+			status_create.configure(state='readonly')
+		else:
+			messagebox.showinfo("Message", "There is no data on the table !!")
+
+
 
 	def check_duplicate_Username():
 		usrname = username_create.get()
@@ -1284,7 +1313,7 @@ def new_win():
 
 			refreshTable_account()
 			reset_acc()
-			messagebox.showinfo("Messgae", "Data Added!!")
+			messagebox.showinfo("Message", "Data Added!!")
 		
 		refreshTable_account()
 
@@ -1318,6 +1347,8 @@ def new_win():
 	account_table.heading("Password", text="Password", anchor=CENTER)
 	account_table.heading("Position", text="Position", anchor=CENTER)
 	account_table.heading("Status", text="Status", anchor=CENTER)
+
+	account_table.bind("<ButtonRelease-1>", select_row_acc)
 
 	refreshTable_account()
 
@@ -1359,21 +1390,21 @@ def new_win():
 
 		# Create Button
 	create_btn_acc = PhotoImage(file = "pic/btn_acc_create.png")
-	create_button_update = customtkinter.CTkButton(master=create_account,image=create_btn_acc, text="",
+	create_button_account = customtkinter.CTkButton(master=create_account,image=create_btn_acc, text="",
 	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command=Save_Data)
-	create_button_update.place(x=218, y=555, height=38,width=135)
+	create_button_account.place(x=218, y=555, height=38,width=135)
 
 		# Update Button
-	create_acc_btn = PhotoImage(file = "pic/btn_acc_update.png")
-	create_acc_update = customtkinter.CTkButton(master=create_account,state='disabled',image=create_acc_btn, text="",
+	update_acc_btn = PhotoImage(file = "pic/btn_acc_update.png")
+	update_button_account = customtkinter.CTkButton(master=create_account,state='disabled',image=update_acc_btn, text="",
 	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
-	create_acc_update.place(x=375, y=555, height=38,width=135)
+	update_button_account.place(x=375, y=555, height=38,width=135)
 
 		# Reset Button
 	reset_acc_btn = PhotoImage(file = "pic/btn_acc_reset.png")
-	reset_acc_update = customtkinter.CTkButton(master=create_account,image=reset_acc_btn, text="",
+	reset_acc_account = customtkinter.CTkButton(master=create_account,image=reset_acc_btn, text="",
 	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command=reset_acc)
-	reset_acc_update.place(x=532, y=555, height=38,width=135)
+	reset_acc_account.place(x=532, y=555, height=38,width=135)
 
 	    # Search Entry
 	search_create_val = StringVar()
