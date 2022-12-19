@@ -22,7 +22,7 @@ attempuser= 0
 sched_id = 0
 
 # conn = mysql.connect(host='sql6.freemysqlhosting.net',port='3306', database='sql6584558', user='sql6584558', password='ZalIZx2tmG')
-conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+# conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 w=Tk()
 
@@ -210,7 +210,8 @@ def new_win():
 
 	def check_duplicate_Username_admin():
 		Username = pg3_txtbox_username.get()
-		
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_username = conn.cursor()
 
 		cur_username.execute("SELECT * FROM account_data WHERE Username = '" + str(Username) + "'")
@@ -225,7 +226,8 @@ def new_win():
 
 	def check_duplicate_Pass_admin():
 		Password = pg3_txtbox_pass.get()
-		
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_pass = conn.cursor()
 
 		cur_pass.execute("SELECT * FROM account_data WHERE Password = '" + str(Password) + "'")
@@ -239,6 +241,8 @@ def new_win():
 		conn.commit()
 
 	def verify_admin():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_verify = conn.cursor()
 		getinact = conn.cursor()
 		try:
@@ -830,6 +834,8 @@ def new_win():
 
 		# Display data to Treewiew
 	def read():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_facinf = conn.cursor()
 
 		cur_facinf.execute("SELECT Employee_Number,Employee_Name,Department FROM faculty_data")
@@ -849,6 +855,7 @@ def new_win():
 		# Check Cuplicate for Employee Number
 	def check_duplicate():
 		Employee_No = employee_num_fac_inf.get()
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 		cur_empnum = conn.cursor()
 
@@ -869,6 +876,7 @@ def new_win():
 		save_employee_number = employee_num_fac_inf.get()
 		save_employee_name = employee_name_fac_inf.get()
 		# save_status = 'Activated'
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 		save_facutyinfo = conn.cursor()
 
@@ -898,6 +906,8 @@ def new_win():
 
 		# Search Data on Table
 	def search_data_facultyinfo():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		lookup_record = search_fac_inf.get()
 		try:
 			if conn.is_connected():
@@ -943,6 +953,8 @@ def new_win():
 			messagebox.showinfo("Error", "Please fill up the blank entry!!")
 			return
 		else:
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 			messagebox.showinfo("Messgae", "Data Updated!!")
 			cur_updateinfo = conn.cursor()
 			cur_updateinfo.execute("UPDATE faculty_data SET Employee_Number= '" + str(save_employee_number) + "', Employee_Name= '" + str(save_employee_name) + "', Department = '" + str(save_college_department) + "', Status = '" + str(save_status) + "' WHERE Employee_Number = '"+ str(save_employee_number)+"' or Employee_Name= '" + str(save_employee_name) + "'")
@@ -1070,6 +1082,8 @@ def new_win():
 	class_moniroting.mntoring_bg_img_lb.pack()
 
 	def class_monitoring_read():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_monitoring = conn.cursor()
 
 		cur_monitoring.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record ")
@@ -1174,6 +1188,8 @@ def new_win():
 	create_account.act_bg_img_lb.pack()
 
 	def account_read():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_acc = conn.cursor()
 
 		cur_acc.execute("SELECT Username,Password,Position,Status FROM account_data ")
@@ -1323,6 +1339,8 @@ def new_win():
 			day_lb_summary.configure(text= string_day)
 
 		def math_read_report():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 			cur_mathrec = conn.cursor()
 
 			cur_mathrec.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -1340,6 +1358,8 @@ def new_win():
 			data_table_summary.tag_configure('orow', background='#EEEEEE')
 
 		def display_info_math():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 			Dept = conn.cursor()
 
 			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -1363,6 +1383,7 @@ def new_win():
 			date_mathematics = dtr_summary.get()
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_datemath = conn.cursor()
 
@@ -1396,6 +1417,7 @@ def new_win():
 			date_mathematics = date_lb_summary.cget("text")
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_presentmath = conn.cursor()
 
@@ -1428,6 +1450,7 @@ def new_win():
 			date_mathematics = date_lb_summary.cget("text")
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_mathlate = conn.cursor()
 
@@ -1460,6 +1483,7 @@ def new_win():
 			date_mathematics = date_lb_summary.cget("text")
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_absentmath = conn.cursor()
 
@@ -1492,6 +1516,7 @@ def new_win():
 			date_mathematics = date_lb_summary.cget("text")
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_edmath = conn.cursor()
 
@@ -1801,6 +1826,8 @@ def new_win():
 			day_lb_summary_psyc.configure(text= string_day)
 
 		def psyc_read_report():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 			cur_psyc = conn.cursor()
 
 			cur_psyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -1818,6 +1845,8 @@ def new_win():
 			data_table_summary_psyc.tag_configure('orow', background='#EEEEEE')
 
 		def display_info_psyc():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 			Dept = conn.cursor()
 
 			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -1841,6 +1870,7 @@ def new_win():
 			date_psychology = dtr_summary_psyc.get()
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_datepsyc = conn.cursor()
 
@@ -1874,6 +1904,8 @@ def new_win():
 			date_psychology = date_lb_summary_psyc.cget("text")
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 
 			cur_prepsyc = conn.cursor()
 
@@ -1906,6 +1938,7 @@ def new_win():
 			date_psychology = date_lb_summary_psyc.cget("text")
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_ltpsyc = conn.cursor()
 
@@ -1938,6 +1971,7 @@ def new_win():
 			date_psychology = date_lb_summary_psyc.cget("text")
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_abpsyc = conn.cursor()
 
@@ -1970,6 +2004,7 @@ def new_win():
 			date_psychology = date_lb_summary_psyc.cget("text")
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_edpsyc = conn.cursor()
 
@@ -2247,6 +2282,8 @@ def new_win():
 			day_lb_summary_applied.configure(text= string_day)
 
 		def applied_read_report():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 			cur_applied = conn.cursor()
 
 			cur_applied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -2264,6 +2301,8 @@ def new_win():
 			data_table_summary_applied.tag_configure('orow', background='#EEEEEE')
 
 		def display_info_applied():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 			Dept = conn.cursor()
 
 			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -2287,6 +2326,7 @@ def new_win():
 			date_physics= dtr_summary_applied.get()
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_dateapp = conn.cursor()
 
@@ -2320,6 +2360,7 @@ def new_win():
 			date_physics = date_lb_summary_applied.cget("text")
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_prapplied = conn.cursor()
 
@@ -2352,6 +2393,7 @@ def new_win():
 			date_physics = date_lb_summary_applied.cget("text")
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_ltapplied = conn.cursor()
 
@@ -2384,6 +2426,7 @@ def new_win():
 			date_physics = date_lb_summary_applied.cget("text")
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_abapplied = conn.cursor()
 
@@ -2416,6 +2459,7 @@ def new_win():
 			date_physics= date_lb_summary_applied.cget("text")
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_edapplied = conn.cursor()
 
@@ -2696,6 +2740,8 @@ def new_win():
 			day_lb_summary_ite.configure(text= string_day)
 
 		def ite_read_report():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 			cur_ite = conn.cursor()
 
 			cur_ite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -2713,6 +2759,8 @@ def new_win():
 			data_table_summary_ite.tag_configure('orow', background='#EEEEEE')
 
 		def display_info_ite():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 			Dept = conn.cursor()
 
 			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
@@ -2736,6 +2784,7 @@ def new_win():
 			date_IT = dtr_summary_ite.get()
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_dateite = conn.cursor()
 
@@ -2769,6 +2818,7 @@ def new_win():
 			date_IT = date_lb_summary_ite.cget("text")
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_prite = conn.cursor()
 
@@ -2801,6 +2851,7 @@ def new_win():
 			date_IT = date_lb_summary_ite.cget("text")
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_ltite = conn.cursor()
 
@@ -2833,6 +2884,7 @@ def new_win():
 			date_IT = date_lb_summary_ite.cget("text")
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_abite = conn.cursor()
 
@@ -2865,6 +2917,7 @@ def new_win():
 			date_IT = date_lb_summary_ite.cget("text")
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			cur_edite = conn.cursor()
 
@@ -3120,6 +3173,8 @@ def new_win():
 
 		# GET the Count of Total Faculty, Total Present, Total Late and Total Absent
 	def count_data():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		total_faculty = conn.cursor()
 		total_present = conn.cursor()
 		total_absent = conn.cursor()
@@ -3143,6 +3198,8 @@ def new_win():
 
 	    # Get And Disply the data in the table
 	def math_read():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_attmath = conn.cursor()
 		cur_attmath.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='Mathematics'")
 		results_math = cur_attmath.fetchall()
@@ -3160,6 +3217,8 @@ def new_win():
 
 	def search_data_math():
 		lookup_record = search_math_rec.get()
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_datamath = conn.cursor()
 
 		# Clear the Treeview
@@ -3257,6 +3316,8 @@ def new_win():
 	refreshTable_math()
 
 	def math_read_IR():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_irmath = conn.cursor()
 
 		cur_irmath.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='Mathematics'")
@@ -3275,6 +3336,7 @@ def new_win():
 
 	def search_data_math_IR():
 		lookup_record = search_math_rec_IR.get()
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 		cur_searchdata = conn.cursor()
 
@@ -3470,6 +3532,8 @@ def new_win():
 
 		# GET the Count of Total Faculty, Total Present, Total Late and Total Absent
 	def count_data_psyc():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		total_faculty = conn.cursor()
 		total_present = conn.cursor()
 		total_absent = conn.cursor()
@@ -3493,6 +3557,8 @@ def new_win():
 
 		# Get And Disply the data in the table
 	def psyc_read():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_attpsyc = conn.cursor()
 
 		cur_attpsyc.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='Psychology'")
@@ -3512,6 +3578,7 @@ def new_win():
 
 	def search_data_psyc():
 		lookup_record = search_psyc.get()
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 		cur_searchpsyc = conn.cursor()
 
@@ -3609,6 +3676,8 @@ def new_win():
 	refreshTable_psyc()
 
 	def psyc_read_IR():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_irpsyc = conn.cursor()
 
 		cur_irpsyc.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='Psychology'")
@@ -3628,6 +3697,7 @@ def new_win():
 
 	def search_data_psyc_IR():
 		lookup_record = search_psyc_IR.get()
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 		cur_searchirpsyc = conn.cursor()
 
@@ -3824,6 +3894,8 @@ def new_win():
 
 		# GET the Count of Total Faculty, Total Present, Total Late and Total Absent
 	def count_data_applied():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		total_faculty = conn.cursor()
 		total_present = conn.cursor()
 		total_absent = conn.cursor()
@@ -3847,6 +3919,8 @@ def new_win():
 
             # Get And Disply the data in the table
 	def applied_read():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_attapplied = conn.cursor()
 
 		cur_attapplied.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='Applied Physics'")
@@ -3866,6 +3940,8 @@ def new_win():
 
 	def search_data_applied():
 		lookup_record = search_applied.get()
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_searchappld = conn.cursor()
 
 		# Clear the Treeview
@@ -3962,6 +4038,8 @@ def new_win():
 	refreshTable_applied()
 
 	def applied_read_IR():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_irappld = conn.cursor()
 
 		cur_irappld.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='Applied Physics'")
@@ -3981,6 +4059,7 @@ def new_win():
 
 	def search_data_applied_IR():
 		lookup_record = search_applied_IR.get()
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 		cur_irsearchappld = conn.cursor()
 
@@ -4174,6 +4253,8 @@ def new_win():
 		date_lb_ite.configure(text = string_date_ite)
 
 	def count_data_ite():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		total_faculty = conn.cursor()
 		total_present = conn.cursor()
 		total_absent = conn.cursor()
@@ -4197,6 +4278,8 @@ def new_win():
 
         # Get And Disply the data in the table
 	def ite_read():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_attite = conn.cursor()
 
 		cur_attite.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='ITE'")
@@ -4216,6 +4299,8 @@ def new_win():
 
 	def search_data_ite():
 		lookup_record = search_ite.get()
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_searchite = conn.cursor()
 
 		# Clear the Treeview
@@ -4313,6 +4398,8 @@ def new_win():
 	refreshTable_ite()
 
 	def ite_read_IR():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_irite = conn.cursor()
 
 		cur_irite.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='ITE'")
@@ -4332,6 +4419,8 @@ def new_win():
 
 	def search_data_ite_IR():
 		lookup_record = search_ite_IR.get()
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
 		cur_irsearchite = conn.cursor()
 
 		# Clear the Treeview
