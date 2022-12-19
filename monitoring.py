@@ -211,10 +211,10 @@ def new_win():
 	def check_duplicate_Username_admin():
 		Username = pg3_txtbox_username.get()
 		
-		cursor = conn.cursor()
+		cur_username = conn.cursor()
 
-		cursor.execute("SELECT * FROM account_data WHERE Username = '" + str(Username) + "'")
-		records = cursor.fetchone()
+		cur_username.execute("SELECT * FROM account_data WHERE Username = '" + str(Username) + "'")
+		records = cur_username.fetchone()
 
 		if records is not None:
 		    return True
@@ -226,10 +226,10 @@ def new_win():
 	def check_duplicate_Pass_admin():
 		Password = pg3_txtbox_pass.get()
 		
-		cursor = conn.cursor()
+		cur_pass = conn.cursor()
 
-		cursor.execute("SELECT * FROM account_data WHERE Password = '" + str(Password) + "'")
-		records = cursor.fetchone()
+		cur_pass.execute("SELECT * FROM account_data WHERE Password = '" + str(Password) + "'")
+		records = cur_pass.fetchone()
 
 		if records is not None:
 		    return True
@@ -239,7 +239,7 @@ def new_win():
 		conn.commit()
 
 	def verify_admin():
-		cursor = conn.cursor()
+		cur_verify = conn.cursor()
 		getinact = conn.cursor()
 		try:
 			if conn.is_connected():
@@ -270,8 +270,8 @@ def new_win():
 				if uname=='' or pwd=='':
 					messagebox.showinfo("Error", "Please Fill The Empty Field!!")
 				elif attemptadmin >=0 and attemptadmin <=2:
-					cursor.execute("SELECT * FROM account_data WHERE Username = '" + str(uname) + "' AND  Password = '" + str(pwd) + "' AND Status ='" + str(state) + "'")
-					if cursor.fetchone():
+					cur_verify.execute("SELECT * FROM account_data WHERE Username = '" + str(uname) + "' AND  Password = '" + str(pwd) + "' AND Status ='" + str(state) + "'")
+					if cur_verify.fetchone():
 						show_frame(page4)
 						messagebox.showinfo("Messgae", "WELCOME USER")
 
@@ -830,10 +830,10 @@ def new_win():
 
 		# Display data to Treewiew
 	def read():
-		cursor = conn.cursor()
+		cur_facinf = conn.cursor()
 
-		cursor.execute("SELECT Employee_Number,Employee_Name,Department FROM faculty_data")
-		results = cursor.fetchall()
+		cur_facinf.execute("SELECT Employee_Number,Employee_Name,Department FROM faculty_data")
+		results = cur_facinf.fetchall()
 		conn.commit()
 		return results
 
@@ -850,10 +850,10 @@ def new_win():
 	def check_duplicate():
 		Employee_No = employee_num_fac_inf.get()
 
-		cursor = conn.cursor()
+		cur_empnum = conn.cursor()
 
-		cursor.execute("SELECT * FROM faculty_data WHERE Employee_Number = '" + str(Employee_No) + "'")
-		records = cursor.fetchone()
+		cur_empnum.execute("SELECT * FROM faculty_data WHERE Employee_Number = '" + str(Employee_No) + "'")
+		records = cur_empnum.fetchone()
 
 		if records is not None:
 			return True
@@ -944,8 +944,8 @@ def new_win():
 			return
 		else:
 			messagebox.showinfo("Messgae", "Data Updated!!")
-			cursor = conn.cursor()
-			cursor.execute("UPDATE faculty_data SET Employee_Number= '" + str(save_employee_number) + "', Employee_Name= '" + str(save_employee_name) + "', Department = '" + str(save_college_department) + "', Status = '" + str(save_status) + "' WHERE Employee_Number = '"+ str(save_employee_number)+"' or Employee_Name= '" + str(save_employee_name) + "'")
+			cur_updateinfo = conn.cursor()
+			cur_updateinfo.execute("UPDATE faculty_data SET Employee_Number= '" + str(save_employee_number) + "', Employee_Name= '" + str(save_employee_name) + "', Department = '" + str(save_college_department) + "', Status = '" + str(save_status) + "' WHERE Employee_Number = '"+ str(save_employee_number)+"' or Employee_Name= '" + str(save_employee_name) + "'")
 			conn.commit()
 
 			department_combobox.configure(state='readonly')
@@ -1070,10 +1070,10 @@ def new_win():
 	class_moniroting.mntoring_bg_img_lb.pack()
 
 	def class_monitoring_read():
-		cursor = conn.cursor()
+		cur_monitoring = conn.cursor()
 
-		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record ")
-		results_class_monitoring= cursor.fetchall()
+		cur_monitoring.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record ")
+		results_class_monitoring= cur_monitoring.fetchall()
 
 		conn.commit()
 		return results_class_monitoring
@@ -1173,6 +1173,23 @@ def new_win():
 	create_account.act_bg_img_lb = Label(create_account, image = create_account.photo)
 	create_account.act_bg_img_lb.pack()
 
+	def account_read():
+		cur_acc = conn.cursor()
+
+		cur_acc.execute("SELECT Username,Password,Position,Status FROM account_data ")
+		results_account = cur_acc.fetchall()
+
+		conn.commit()
+		return results_account
+
+	def refreshTable_account():
+		for data_account in account_table.get_children():
+			account_table.delete(data_account)
+
+		for results_acc in reverse(account_read()):
+			account_table.insert(parent='', index='end', iid=results_acc, text="", values=(results_acc), tag="orow")
+		account_table.tag_configure('orow', background='#EEEEEE')
+
 	     # Data Table "TreeView"
 	scrollbarx_account = Scrollbar(create_account, orient=HORIZONTAL)
 	scrollbarx_account.place(x=730, y=584, width=465)
@@ -1189,20 +1206,21 @@ def new_win():
 	scrollbarx_account.configure(command=account_table.xview)
 	scrollbary_account.configure(command=account_table.yview)
 
-	account_table['columns'] = ("Employee No.","Employee Name","Username","Password")
+	account_table['columns'] = ("Username","Password","Position","Status")
 	# Format Columns
 	account_table.column("#0", width=0, stretch=NO)
-	account_table.column("Employee No.", anchor=CENTER, width=50)
-	account_table.column("Employee Name", anchor=CENTER, width=50)
 	account_table.column("Username", anchor=CENTER, width=50)
 	account_table.column("Password", anchor=CENTER, width=50)
-
+	account_table.column("Position", anchor=CENTER, width=50)
+	account_table.column("Status", anchor=CENTER, width=50)
 
 	# Create Headings
-	account_table.heading("Employee No.", text="Employee No.", anchor=CENTER)
-	account_table.heading("Employee Name", text="Employee Name", anchor=CENTER)
 	account_table.heading("Username", text="Username", anchor=CENTER)
 	account_table.heading("Password", text="Password", anchor=CENTER)
+	account_table.heading("Position", text="Position", anchor=CENTER)
+	account_table.heading("Status", text="Status", anchor=CENTER)
+
+	refreshTable_account()
 
 	    # Entry Username
 	username_create = Entry(create_account, font="Heltvetica 13 bold")
@@ -1241,7 +1259,7 @@ def new_win():
 	    # Show All Button
 	create_showall_btn = PhotoImage(file = "pic/btn_showall.png")
 	create_button_showall = customtkinter.CTkButton(master=create_account,image=create_showall_btn, text="" ,
-	                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command= 'refreshTable')
+	                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command= refreshTable_account)
 	create_button_showall.place(x=923, y=603, height=28,width=110)
 
 	    # Back Button
@@ -1297,10 +1315,10 @@ def new_win():
 			day_lb_summary.configure(text= string_day)
 
 		def math_read_report():
-			cursor = conn.cursor()
+			cur_mathrec = conn.cursor()
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
-			results_math_report = cursor.fetchall()
+			cur_mathrec.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			results_math_report = cur_mathrec.fetchall()
 
 			conn.commit()
 			return results_math_report
@@ -1338,15 +1356,15 @@ def new_win():
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
 
-			cursor = conn.cursor()
+			cur_datemath = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary.get_children():
 				data_table_summary.delete(record)
             
 			consdate = '%' +date_mathematics+'%'
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='Mathematics' AND (_Date='"+ str(date_mathematics) +"' or _Date LIKE '"+ str(consdate) +"')")
-			records = cursor.fetchall()
+			cur_datemath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='Mathematics' AND (_Date='"+ str(date_mathematics) +"' or _Date LIKE '"+ str(consdate) +"')")
+			records = cur_datemath.fetchall()
 
 			global count
 			count = 0
@@ -1371,14 +1389,14 @@ def new_win():
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
 
-			cursor = conn.cursor()
+			cur_presentmath = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary.get_children():
 				data_table_summary.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Present' AND _Date='"+ str(date_mathematics) +"'")
-			records = cursor.fetchall()
+			cur_presentmath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Present' AND _Date='"+ str(date_mathematics) +"'")
+			records = cur_presentmath.fetchall()
 
 			global count
 			count = 0
@@ -1403,14 +1421,14 @@ def new_win():
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
 
-			cursor = conn.cursor()
+			cur_mathlate = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary.get_children():
 				data_table_summary.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Late' AND _Date='"+ str(date_mathematics) +"'")
-			records = cursor.fetchall()
+			cur_mathlate.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Late' AND _Date='"+ str(date_mathematics) +"'")
+			records = cur_mathlate.fetchall()
 
 			global count
 			count = 0
@@ -1435,14 +1453,14 @@ def new_win():
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
 
-			cursor = conn.cursor()
+			cur_absentmath = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary.get_children():
 				data_table_summary.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Absent' AND _Date='"+ str(date_mathematics) +"'")
-			records = cursor.fetchall()
+			cur_absentmath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Absent' AND _Date='"+ str(date_mathematics) +"'")
+			records = cur_absentmath.fetchall()
 
 			global count
 			count = 0
@@ -1467,14 +1485,14 @@ def new_win():
 			employee_num_summary.configure(state='normal')
 			emplno = employee_num_summary.get()
 
-			cursor = conn.cursor()
+			cur_edmath = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary.get_children():
 				data_table_summary.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Early Dismissal' AND _Date='"+ str(date_mathematics) +"'")
-			records = cursor.fetchall()
+			cur_edmath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Early Dismissal' AND _Date='"+ str(date_mathematics) +"'")
+			records = cur_edmath.fetchall()
 
 			global count
 			count = 0
@@ -1775,10 +1793,10 @@ def new_win():
 			day_lb_summary_psyc.configure(text= string_day)
 
 		def psyc_read_report():
-			cursor = conn.cursor()
+			cur_psyc = conn.cursor()
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
-			results_report = cursor.fetchall()
+			cur_psyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			results_report = cur_psyc.fetchall()
 
 			conn.commit()
 			return results_report
@@ -1816,15 +1834,15 @@ def new_win():
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
 
-			cursor = conn.cursor()
+			cur_datepsyc = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_psyc.get_children():
 				data_table_summary_psyc.delete(record)
             
 			consdate = '%' +date_psychology+'%'
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='Psychology' AND (_Date='"+ str(date_psychology) +"' or _Date LIKE '"+ str(consdate) +"')")
-			records = cursor.fetchall()
+			cur_datepsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='Psychology' AND (_Date='"+ str(date_psychology) +"' or _Date LIKE '"+ str(consdate) +"')")
+			records = cur_datepsyc.fetchall()
 
 			global count
 			count = 0
@@ -1849,14 +1867,14 @@ def new_win():
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
 
-			cursor = conn.cursor()
+			cur_prepsyc = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_psyc.get_children():
 				data_table_summary_psyc.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Present' AND _Date='"+ str(date_psychology) +"'")
-			records = cursor.fetchall()
+			cur_prepsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Present' AND _Date='"+ str(date_psychology) +"'")
+			records = cur_prepsyc.fetchall()
 
 			global count
 			count = 0
@@ -1881,14 +1899,14 @@ def new_win():
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
 
-			cursor = conn.cursor()
+			cur_ltpsyc = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_psyc.get_children():
 				data_table_summary_psyc.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Late' AND _Date='"+ str(date_psychology) +"'")
-			records = cursor.fetchall()
+			cur_ltpsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Late' AND _Date='"+ str(date_psychology) +"'")
+			records = cur_ltpsyc.fetchall()
 
 			global count
 			count = 0
@@ -1913,14 +1931,14 @@ def new_win():
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
 
-			cursor = conn.cursor()
+			cur_abpsyc = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_psyc.get_children():
 				data_table_summary_psyc.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Absent' AND _Date='"+ str(date_psychology) +"'")
-			records = cursor.fetchall()
+			cur_abpsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Absent' AND _Date='"+ str(date_psychology) +"'")
+			records = cur_abpsyc.fetchall()
 
 			global count
 			count = 0
@@ -1945,14 +1963,14 @@ def new_win():
 			employee_num_summary_psyc.configure(state='normal')
 			emplno = employee_num_summary_psyc.get()
 
-			cursor = conn.cursor()
+			cur_edpsyc = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_psyc.get_children():
 				data_table_summary_psyc.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Early Dismissal' AND _Date='"+ str(date_psychology) +"'")
-			records = cursor.fetchall()
+			cur_edpsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Early Dismissal' AND _Date='"+ str(date_psychology) +"'")
+			records = cur_edpsyc.fetchall()
 
 			global count
 			count = 0
@@ -2221,10 +2239,10 @@ def new_win():
 			day_lb_summary_applied.configure(text= string_day)
 
 		def applied_read_report():
-			cursor = conn.cursor()
+			cur_applied = conn.cursor()
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
-			results_report = cursor.fetchall()
+			cur_applied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			results_report = cur_applied.fetchall()
 
 			conn.commit()
 			return results_report
@@ -2262,15 +2280,15 @@ def new_win():
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
 
-			cursor = conn.cursor()
+			cur_dateapp = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_applied.get_children():
 				data_table_summary_applied.delete(record)
 
 			consdate = '%' +date_physics+'%'
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='Applied Physics' AND (_Date='"+ str(date_physics) +"' or _Date LIKE '"+ str(consdate) +"')")
-			records = cursor.fetchall()
+			cur_dateapp.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='Applied Physics' AND (_Date='"+ str(date_physics) +"' or _Date LIKE '"+ str(consdate) +"')")
+			records = cur_dateapp.fetchall()
 
 			global count
 			count = 0
@@ -2295,14 +2313,14 @@ def new_win():
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
 
-			cursor = conn.cursor()
+			cur_prapplied = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_applied.get_children():
 				data_table_summary_applied.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Present' AND _Date='"+ str(date_physics) +"'")
-			records = cursor.fetchall()
+			cur_prapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Present' AND _Date='"+ str(date_physics) +"'")
+			records = cur_prapplied.fetchall()
 
 			global count
 			count = 0
@@ -2327,14 +2345,14 @@ def new_win():
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
 
-			cursor = conn.cursor()
+			cur_ltapplied = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_applied.get_children():
 				data_table_summary_applied.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Late' AND _Date='"+ str(date_physics) +"'")
-			records = cursor.fetchall()
+			cur_ltapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Late' AND _Date='"+ str(date_physics) +"'")
+			records = cur_ltapplied.fetchall()
 
 			global count
 			count = 0
@@ -2359,14 +2377,14 @@ def new_win():
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
 
-			cursor = conn.cursor()
+			cur_abapplied = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_applied.get_children():
 				data_table_summary_applied.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Absent' AND _Date='"+ str(date_physics) +"'")
-			records = cursor.fetchall()
+			cur_abapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Absent' AND _Date='"+ str(date_physics) +"'")
+			records = cur_abapplied.fetchall()
 
 			global count
 			count = 0
@@ -2391,14 +2409,14 @@ def new_win():
 			employee_num_summary_applied.configure(state='normal')
 			emplno = employee_num_summary_applied.get()
 
-			cursor = conn.cursor()
+			cur_edapplied = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_applied.get_children():
 				data_table_summary_applied.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Early Dismissal' AND _Date='"+ str(date_physics) +"'")
-			records = cursor.fetchall()
+			cur_edapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Early Dismissal' AND _Date='"+ str(date_physics) +"'")
+			records = cur_edapplied.fetchall()
 
 			global count
 			count = 0
@@ -2670,10 +2688,10 @@ def new_win():
 			day_lb_summary_ite.configure(text= string_day)
 
 		def ite_read_report():
-			cursor = conn.cursor()
+			cur_ite = conn.cursor()
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
-			results_math_report = cursor.fetchall()
+			cur_ite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+			results_math_report = cur_ite.fetchall()
 
 			conn.commit()
 			return results_math_report
@@ -2711,15 +2729,15 @@ def new_win():
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
 
-			cursor = conn.cursor()
+			cur_dateite = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_ite.get_children():
 				data_table_summary_ite.delete(record)
 
 			consdate = '%' +date_IT+'%'
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='ITE' AND (_Date='"+ str(date_IT) +"' or _Date LIKE '"+ str(consdate) +"')")
-			records = cursor.fetchall()
+			cur_dateite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number ='"+ str(emplno) +"' AND Department='ITE' AND (_Date='"+ str(date_IT) +"' or _Date LIKE '"+ str(consdate) +"')")
+			records = cur_dateite.fetchall()
 
 			global count
 			count = 0
@@ -2744,14 +2762,14 @@ def new_win():
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
 
-			cursor = conn.cursor()
+			cur_prite = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_ite.get_children():
 				data_table_summary_ite.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Present' AND _Date='"+ str(date_IT) +"'")
-			records = cursor.fetchall()
+			cur_prite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Present' AND _Date='"+ str(date_IT) +"'")
+			records = cur_prite.fetchall()
 
 			global count
 			count = 0
@@ -2776,14 +2794,14 @@ def new_win():
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
 
-			cursor = conn.cursor()
+			cur_ltite = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_ite.get_children():
 				data_table_summary_ite.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Late' AND _Date='"+ str(date_IT) +"'")
-			records = cursor.fetchall()
+			cur_ltite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Late' AND _Date='"+ str(date_IT) +"'")
+			records = cur_ltite.fetchall()
 
 			global count
 			count = 0
@@ -2808,14 +2826,14 @@ def new_win():
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
 
-			cursor = conn.cursor()
+			cur_abite = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_ite.get_children():
 				data_table_summary_ite.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Absent' AND _Date='"+ str(date_IT) +"'")
-			records = cursor.fetchall()
+			cur_abite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Absent' AND _Date='"+ str(date_IT) +"'")
+			records = cur_abite.fetchall()
 
 			global count
 			count = 0
@@ -2840,14 +2858,14 @@ def new_win():
 			employee_num_summary_ite.configure(state='normal')
 			emplno = employee_num_summary_ite.get()
 
-			cursor = conn.cursor()
+			cur_edite = conn.cursor()
 
 			# Clear the Treeview
 			for record in data_table_summary_ite.get_children():
 				data_table_summary_ite.delete(record)
 
-			cursor.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Early Dismissal' AND _Date='"+ str(date_IT) +"'")
-			records = cursor.fetchall()
+			cur_edite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Early Dismissal' AND _Date='"+ str(date_IT) +"'")
+			records = cur_edite.fetchall()
 
 			global count
 			count = 0
@@ -3072,7 +3090,7 @@ def new_win():
 		time_report()
 		display_info_ite()
 
-############################################################################### Attentandance Rerord Part ###################################################################################################################################
+############################################################################### Attendance Rerord Part ###################################################################################################################################
 
 	 # ============= Mathematics Attendance Record Frame =============================================================================
 
@@ -3117,9 +3135,9 @@ def new_win():
 
 	    # Get And Disply the data in the table
 	def math_read():
-		cursor = conn.cursor()
-		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='Mathematics'")
-		results_math = cursor.fetchall()
+		cur_attmath = conn.cursor()
+		cur_attmath.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='Mathematics'")
+		results_math = cur_attmath.fetchall()
 		conn.commit()
 		return results_math
 
@@ -3134,16 +3152,16 @@ def new_win():
 
 	def search_data_math():
 		lookup_record = search_math_rec.get()
-		cursor = conn.cursor()
+		cur_datamath = conn.cursor()
 
 		# Clear the Treeview
 		for record in data_table_math_rec.get_children():
 			data_table_math_rec.delete(record)
 
 		lk_rec = '%' +lookup_record+ '%'
-		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE (_Date LIKE '" + str(lk_rec) + "' or Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "' or Department LIKE '" + str(lk_rec) + "' or Time_in LIKE '" + str(lk_rec) + "' or Time_out LIKE '" + str(lk_rec) + "') AND Department='Mathematics'")
+		cur_datamath.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE (_Date LIKE '" + str(lk_rec) + "' or Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "' or Department LIKE '" + str(lk_rec) + "' or Time_in LIKE '" + str(lk_rec) + "' or Time_out LIKE '" + str(lk_rec) + "') AND Department='Mathematics'")
 
-		records = cursor.fetchall()
+		records = cur_datamath.fetchall()
 
 		global count
 		count = 0
@@ -3231,10 +3249,10 @@ def new_win():
 	refreshTable_math()
 
 	def math_read_IR():
-		cursor = conn.cursor()
+		cur_irmath = conn.cursor()
 
-		cursor.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='Mathematics'")
-		results_math_IR = cursor.fetchall()
+		cur_irmath.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='Mathematics'")
+		results_math_IR = cur_irmath.fetchall()
 
 		conn.commit()
 		return results_math_IR
@@ -3250,13 +3268,15 @@ def new_win():
 	def search_data_math_IR():
 		lookup_record = search_math_rec_IR.get()
 
+		cur_searchdata = conn.cursor()
+
 		# Clear the Treeview
 		for record in data_table_math_rec_IR.get_children():
 			data_table_math_rec_IR.delete(record)
         
 		lk_rec = '%'+lookup_record+'%'
-		cursor.execute("SELECT Employee_Number,Employee_Name FROM faculty_data WHERE (Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "') AND Department='Mathematics'")
-		records = cursor.fetchall()
+		cur_searchdata.execute("SELECT Employee_Number,Employee_Name FROM faculty_data WHERE (Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "') AND Department='Mathematics'")
+		records = cur_searchdata.fetchall()
 
 		global count
 		count = 0
@@ -3407,6 +3427,7 @@ def new_win():
 
 		employee_num_math_rec.delete(0,END)
 		employee_name_math_rec.delete(0,END)
+		math_rec_button_report.configure(state='disabled')
 		show_frame(attendance_record)
 
 		employee_num_math_rec.configure(state='disabled')
@@ -3464,10 +3485,10 @@ def new_win():
 
 		# Get And Disply the data in the table
 	def psyc_read():
-		cursor = conn.cursor()
+		cur_attpsyc = conn.cursor()
 
-		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='Psychology'")
-		results_psyc = cursor.fetchall()
+		cur_attpsyc.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='Psychology'")
+		results_psyc = cur_attpsyc.fetchall()
 
 		conn.commit()
 		return results_psyc
@@ -3484,15 +3505,15 @@ def new_win():
 	def search_data_psyc():
 		lookup_record = search_psyc.get()
 
-		cursor = conn.cursor()
+		cur_searchpsyc = conn.cursor()
 
 		# Clear the Treeview
 		for record in data_table_psyc.get_children():
 			data_table_psyc.delete(record)
         
 		lk_rec = '%' +lookup_record+ '%'
-		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE (_Date LIKE '" + str(lk_rec) + "' or Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "' or Department LIKE '" + str(lk_rec) + "' or Time_in LIKE '" + str(lk_rec) + "' or Time_out LIKE '" + str(lk_rec) + "') AND Department='Psychology'")
-		records = cursor.fetchall()
+		cur_searchpsyc.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE (_Date LIKE '" + str(lk_rec) + "' or Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "' or Department LIKE '" + str(lk_rec) + "' or Time_in LIKE '" + str(lk_rec) + "' or Time_out LIKE '" + str(lk_rec) + "') AND Department='Psychology'")
+		records = cur_searchpsyc.fetchall()
 
 		global count
 		count = 0
@@ -3580,10 +3601,10 @@ def new_win():
 	refreshTable_psyc()
 
 	def psyc_read_IR():
-		cursor = conn.cursor()
+		cur_irpsyc = conn.cursor()
 
-		cursor.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='Psychology'")
-		results_psyc_IR = cursor.fetchall()
+		cur_irpsyc.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='Psychology'")
+		results_psyc_IR = cur_irpsyc.fetchall()
 
 		conn.commit()
 		return results_psyc_IR
@@ -3600,15 +3621,15 @@ def new_win():
 	def search_data_psyc_IR():
 		lookup_record = search_psyc_IR.get()
 
-		cursor = conn.cursor()
+		cur_searchirpsyc = conn.cursor()
 
 		# Clear the Treeview
 		for record in data_table_psyc_IR.get_children():
 			data_table_psyc_IR.delete(record)
         
 		lk_rec = '%' +lookup_record+ '%'
-		cursor.execute("SELECT Employee_Number,Employee_Name FROM faculty_data WHERE (Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "') AND Department='Psychology'")
-		records = cursor.fetchall()
+		cur_searchirpsyc.execute("SELECT Employee_Number,Employee_Name FROM faculty_data WHERE (Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "') AND Department='Psychology'")
+		records = cur_searchirpsyc.fetchall()
 
 		global count
 		count = 0
@@ -3759,6 +3780,7 @@ def new_win():
 
 		employee_num_psyc.delete(0,END)
 		employee_name_psyc.delete(0,END)
+		psyc_button_report.configure(state='disabled')
 		show_frame(attendance_record)
 
 		employee_num_psyc.configure(state='disabled')
@@ -3817,10 +3839,10 @@ def new_win():
 
             # Get And Disply the data in the table
 	def applied_read():
-		cursor = conn.cursor()
+		cur_attapplied = conn.cursor()
 
-		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='Applied Physics'")
-		results_applied = cursor.fetchall()
+		cur_attapplied.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='Applied Physics'")
+		results_applied = cur_attapplied.fetchall()
 
 		conn.commit()
 		return results_applied
@@ -3836,15 +3858,15 @@ def new_win():
 
 	def search_data_applied():
 		lookup_record = search_applied.get()
-		cursor = conn.cursor()
+		cur_searchappld = conn.cursor()
 
 		# Clear the Treeview
 		for record in data_table_applied.get_children():
 			data_table_applied.delete(record)
 
 		lk_rec = '%' +lookup_record+ '%'
-		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE (_Date LIKE '" + str(lk_rec) + "' or Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "' or Department LIKE '" + str(lk_rec) + "' or Time_in LIKE '" + str(lk_rec) + "' or Time_out LIKE '" + str(lk_rec) + "') AND Department='Applied Physics'")
-		records = cursor.fetchall()
+		cur_searchappld.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE (_Date LIKE '" + str(lk_rec) + "' or Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "' or Department LIKE '" + str(lk_rec) + "' or Time_in LIKE '" + str(lk_rec) + "' or Time_out LIKE '" + str(lk_rec) + "') AND Department='Applied Physics'")
+		records = cur_searchappld.fetchall()
 
 		global count
 		count = 0
@@ -3932,10 +3954,10 @@ def new_win():
 	refreshTable_applied()
 
 	def applied_read_IR():
-		cursor = conn.cursor()
+		cur_irappld = conn.cursor()
 
-		cursor.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='Applied Physics'")
-		results_applied_IR = cursor.fetchall()
+		cur_irappld.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='Applied Physics'")
+		results_applied_IR = cur_irappld.fetchall()
 
 		conn.commit()
 		return results_applied_IR
@@ -3952,15 +3974,15 @@ def new_win():
 	def search_data_applied_IR():
 		lookup_record = search_applied_IR.get()
 
-		cursor = conn.cursor()
+		cur_irsearchappld = conn.cursor()
 
 		# Clear the Treeview
 		for record in data_table_applied_IR.get_children():
 			data_table_applied_IR.delete(record)
 
 		lk_rec = '%' +lookup_record+ '%'
-		cursor.execute("SELECT Employee_Number,Employee_Name FROM faculty_data WHERE (Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "')AND Department='Applied Physics'")
-		records = cursor.fetchall()
+		cur_irsearchappld.execute("SELECT Employee_Number,Employee_Name FROM faculty_data WHERE (Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "')AND Department='Applied Physics'")
+		records = cur_irsearchappld.fetchall()
 
 		global count
 		count = 0
@@ -4110,6 +4132,7 @@ def new_win():
 
 		employee_num_applied.delete(0,END)
 		employee_name_applied.delete(0,END)
+		applied_button_report.configure(state='disabled')
 		show_frame(attendance_record)
 
 		employee_num_applied.configure(state='disabled')
@@ -4166,10 +4189,10 @@ def new_win():
 
         # Get And Disply the data in the table
 	def ite_read():
-		cursor = conn.cursor()
+		cur_attite = conn.cursor()
 
-		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='ITE'")
-		results_ite = cursor.fetchall()
+		cur_attite.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE Department='ITE'")
+		results_ite = cur_attite.fetchall()
 
 		conn.commit()
 		return results_ite
@@ -4185,15 +4208,15 @@ def new_win():
 
 	def search_data_ite():
 		lookup_record = search_ite.get()
-		cursor = conn.cursor()
+		cur_searchite = conn.cursor()
 
 		# Clear the Treeview
 		for record in data_table_ite.get_children():
 			data_table_ite.delete(record)
 
 		lk_rec = '%' +lookup_record+ '%'
-		cursor.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE (_Date LIKE '" + str(lk_rec) + "' or Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "' or Department LIKE '" + str(lk_rec) + "' or Time_in LIKE '" + str(lk_rec) + "' or Time_out LIKE '" + str(lk_rec) + "') AND Department='ITE'")
-		records = cursor.fetchall()
+		cur_searchite.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Time_in,Time_out FROM attendance_record WHERE (_Date LIKE '" + str(lk_rec) + "' or Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "' or Department LIKE '" + str(lk_rec) + "' or Time_in LIKE '" + str(lk_rec) + "' or Time_out LIKE '" + str(lk_rec) + "') AND Department='ITE'")
+		records = cur_searchite.fetchall()
 
 		global count
 		count = 0
@@ -4282,10 +4305,10 @@ def new_win():
 	refreshTable_ite()
 
 	def ite_read_IR():
-		cursor = conn.cursor()
+		cur_irite = conn.cursor()
 
-		cursor.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='ITE'")
-		results_ite_IR = cursor.fetchall()
+		cur_irite.execute("SELECT DISTINCT Employee_Number,Employee_Name FROM faculty_data WHERE Department='ITE'")
+		results_ite_IR = cur_irite.fetchall()
 
 		conn.commit()
 		return results_ite_IR
@@ -4301,15 +4324,15 @@ def new_win():
 
 	def search_data_ite_IR():
 		lookup_record = search_ite_IR.get()
-		cursor = conn.cursor()
+		cur_irsearchite = conn.cursor()
 
 		# Clear the Treeview
 		for record in data_table_ite_IR.get_children():
 			data_table_ite_IR.delete(record)
 
 		lk_rec = '%' +lookup_record+ '%'
-		cursor.execute("SELECT Employee_Number,Employee_Name FROM faculty_data WHERE (Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "') AND Department='ITE'")
-		records = cursor.fetchall()
+		cur_irsearchite.execute("SELECT Employee_Number,Employee_Name FROM faculty_data WHERE (Employee_Number LIKE '" + str(lk_rec) + "' or Employee_Name LIKE '" + str(lk_rec) + "') AND Department='ITE'")
+		records = cur_irsearchite.fetchall()
 
 		global count
 		count = 0
@@ -4464,6 +4487,7 @@ def new_win():
 
 		employee_num_ite.delete(0,END)
 		employee_name_ite.delete(0,END)
+		ite_button_report.configure(state='disabled')
 		show_frame(attendance_record)
 
 		employee_num_ite.configure(state='disabled')
