@@ -281,7 +281,7 @@ def new_win():
 
 						pg3_txtbox_username.delete(0, END)
 						pg3_txtbox_pass.delete(0, END)
-						# check_button.deselect()
+						check_button.deselect()
 
 					elif inactive:
 						messagebox.showinfo("Messgae", "Please inform the  Co-Admin to Activate your Account!!\nThank You!! ")
@@ -292,7 +292,7 @@ def new_win():
 						messagebox.showinfo("Messge", "Username Is Incorrect!!\n\nReamaining Attempt: "+ str(count))
 						pg3_txtbox_username.delete(0, END)
 						pg3_txtbox_pass.delete(0, END)
-						# check_button.deselect()
+						check_button.deselect()
 						return
 					elif check_duplicate_Pass_admin()==False:
 						# messagebox.showinfo("Error", "Password Is Incorrect!!")
@@ -301,7 +301,7 @@ def new_win():
 						messagebox.showinfo("Messge", "Password Is Incorrect!!\n\nReamaining Attempt: "+ str(count))
 						pg3_txtbox_username.delete(0, END)
 						pg3_txtbox_pass.delete(0, END)
-						# check_button.deselect()
+						check_button.deselect()
 						return
 
 					else:
@@ -1206,6 +1206,89 @@ def new_win():
 			account_table.insert(parent='', index='end', iid=results_acc, text="", values=(results_acc), tag="orow")
 		account_table.tag_configure('orow', background='#EEEEEE')
 
+	def reset_acc():
+		position_create.configure(state='normal')
+
+		username_create.delete(0,END)
+		password_create.delete(0,END)
+		re_password_create.delete(0,END)
+		position_create.delete(0,END)
+
+		pass_check_button.deselect()
+		re_pass_check_button.deselect()
+
+		position_create.configure(state='readonly')
+		create_acc_update.configure(state='disabled')
+
+	def check_duplicate_Username():
+		usrname = username_create.get()
+
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+		dup_ursn = conn.cursor()
+
+		dup_ursn.execute("SELECT * FROM account_data WHERE Username = '" + str(usrname) + "'")
+		records = dup_ursn.fetchone()
+
+		if records is not None:
+			return True
+		else:
+			return False
+
+		conn.commit()
+
+	def check_duplicate_Pass():
+		vrfy_pass = re_password_create.get()
+
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+		dub_pass = conn.cursor()
+
+		dub_pass.execute("SELECT * FROM account_data WHERE Password = '" + str(vrfy_pass) + "'")
+		records = dub_pass.fetchone()
+
+		if records is not None:
+			return True
+		else:
+			return False
+
+		conn.commit()
+
+	def Save_Data():
+		position_create.configure(state='normal')
+
+		username = username_create.get()
+		password = password_create.get()
+		verify_pass = re_password_create.get()
+		position = position_create.get()
+		status = 'Activated'
+
+		if username == "" or password == "" or verify_pass == "" or position == "":
+			messagebox.showinfo("Message", "Please fill up the blank entry!!")
+			return
+		elif password != verify_pass:
+			messagebox.showerror("Meaage" , "Password & Confirm Password Should Be Same")
+			return
+		elif check_duplicate_Username()== True:
+			messagebox.showinfo("Message", "Username Already Exist!!")
+			return
+		elif check_duplicate_Pass()== True:
+			messagebox.showinfo("Message", "Password Already Exist!!")
+			return
+		else:
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+			save_acc = conn.cursor()
+
+			insertdata = str(username),str(password),str(position),str(status)
+			save_acc.execute("""INSERT INTO account_data (Username,Password,Position,Status) 
+											VAlUES(%s,%s,%s,%s)""", insertdata)
+			conn.commit()
+
+			refreshTable_account()
+			reset_acc()
+			messagebox.showinfo("Messgae", "Data Added!!")
+		
+		refreshTable_account()
+
+
 	     # Data Table "TreeView"
 	scrollbarx_account = Scrollbar(create_account, orient=HORIZONTAL)
 	scrollbarx_account.place(x=730, y=584, width=465)
@@ -1243,37 +1326,53 @@ def new_win():
 	username_create.place(x=345, y=340, width=160, height=25)
 
 	    # Entry Password
-	password_create = Entry(create_account, font="Heltvetica 13 bold")
+	password_create = Entry(create_account, font="Heltvetica 13 bold", show='*')
 	password_create.place(x=345, y=379, width=160, height=25)
 
+	def show_password():
+		if  password_create.cget('show') =='*':
+			password_create.configure(show='')
+		else:
+			password_create.configure(show='*')
+	pass_check_button = Checkbutton(create_account, text="show", command=show_password, font="Arial 10", activebackground="#1f2a76",)
+	pass_check_button.place(x=508,y=379)
+
 	    # Entry  Re Enter Password
-	re_password_create = Entry(create_account, font="Heltvetica 13 bold")
+	re_password_create = Entry(create_account, font="Heltvetica 13 bold", show='*')
 	re_password_create.place(x=455, y=425, width=160, height=25)
 
+	def show_re_password():
+		if  re_password_create.cget('show') =='*':
+			re_password_create.configure(show='')
+		else:
+			re_password_create.configure(show='*')
+	re_pass_check_button = Checkbutton(create_account, text="show", command=show_re_password, font="Arial 10", activebackground="#1f2a76",)
+	re_pass_check_button.place(x=618,y=425)
+
 	    # Entry Position
-	position_create = Entry(create_account, font="Heltvetica 13 bold")
+	position_create = ttk.Combobox(create_account,state='readonly', values=["Admin", "Employee"])
 	position_create.place(x=345, y=472, width=160, height=25)
 
 	    # Entry Status
-	status_create = Entry(create_account, font="Heltvetica 13 bold")
+	status_create = ttk.Combobox(create_account,state='disabled', values=["Activated", "Deactivated"])
 	status_create.place(x=345, y=511, width=160, height=25)
 
 		# Create Button
-	create_update_btn = PhotoImage(file = "pic/btn_acc_create.png")
-	create_button_update = customtkinter.CTkButton(master=create_account,image=create_update_btn, text="",
-	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
+	create_btn_acc = PhotoImage(file = "pic/btn_acc_create.png")
+	create_button_update = customtkinter.CTkButton(master=create_account,image=create_btn_acc, text="",
+	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command=Save_Data)
 	create_button_update.place(x=218, y=555, height=38,width=135)
 
 		# Update Button
 	create_acc_btn = PhotoImage(file = "pic/btn_acc_update.png")
-	create_acc_update = customtkinter.CTkButton(master=create_account,image=create_acc_btn, text="",
+	create_acc_update = customtkinter.CTkButton(master=create_account,state='disabled',image=create_acc_btn, text="",
 	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
 	create_acc_update.place(x=375, y=555, height=38,width=135)
 
 		# Reset Button
 	reset_acc_btn = PhotoImage(file = "pic/btn_acc_reset.png")
 	reset_acc_update = customtkinter.CTkButton(master=create_account,image=reset_acc_btn, text="",
-	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command= 'Update_Data')
+	                                            corner_radius=10, fg_color="#00436e",hover_color="#006699", command=reset_acc)
 	reset_acc_update.place(x=532, y=555, height=38,width=135)
 
 	    # Search Entry
