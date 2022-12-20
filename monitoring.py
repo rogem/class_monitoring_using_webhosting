@@ -369,13 +369,65 @@ def new_win():
 	page4.pg4_bg_img_lb = Label(page4, image = page4.photo)
 	page4.pg4_bg_img_lb.pack()
 
-	    # Admin Name Label
-	pg4_lb_name = Label(page4, bg ='#ffffff', fg='#ffffff', font = "Heltvetica 9")
-	pg4_lb_name.place(x=540, y=10)
+		# Get Current Time and Date
+	def time_home():
+		string_time = strftime('%H:%M %p')
+		time_lb_pg4.configure(text = string_time)
+		time_lb_pg4.after(1000, time_home)
 
-	    # Admin Department Label
-	pg4_lb_dept = Label(page4, bg ='#ffffff', fg='#ffffff', font = "Heltvetica 9")
-	pg4_lb_dept.place(x=640, y=10)
+		string_date = strftime('20%y-%m-%d')
+		date_lb_pg4.configure(text = string_date)
+
+		string_day = strftime('%a')
+		day_lb_pg4.configure(text= string_day)
+
+		# Reset every week for Individual Summary
+	def count_reset():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+		update_count = conn.cursor()
+
+		# emplno = employee_num_summary.get()
+		get_day = day_lb_pg4.cget("text")
+		# get_time = time_lb_pg4.cget("text")
+		
+
+		if get_day == "Tue":
+			get_date = datetime.date.today()
+			update_count.execute("UPDATE subject_record SET _count=0  WHERE _count=1 AND Date_Stamp < '"+ str(get_date) +"'")
+			print(get_day)
+			print(get_date)
+		else:
+			messagebox.showinfo("Message", "Failed to process")
+		conn.commit()
+		conn.close()
+
+		# Time Text
+	time_lb_pg4 = Label(page4, text='Time:', fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+	time_lb_pg4.place(x=540, y=10)
+
+	    # date Text
+	date_lb_pg4 = Label(page4, text='Date:', fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+	date_lb_pg4.place(x=710, y=10)
+
+	    # Time Label
+	time_lb_pg4 = Label(page4, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+	time_lb_pg4.place(x=590, y=10)
+
+	    # date Label
+	date_lb_pg4 = Label(page4, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+	date_lb_pg4.place(x=760, y=10)
+
+	    # day Label
+	day_lb_pg4 = Label(page4, fg='#000000', bg ='#ffffff', font = "Heltvetica 12 bold")
+	day_lb_pg4.place(x=852, y=10)
+
+	#     # Admin Name Label
+	# pg4_lb_name = Label(page4, bg ='#ffffff', fg='#ffffff', font = "Heltvetica 9")
+	# pg4_lb_name.place(x=540, y=10)
+
+	#     # Admin Department Label
+	# pg4_lb_dept = Label(page4, bg ='#ffffff', fg='#ffffff', font = "Heltvetica 9")
+	# pg4_lb_dept.place(x=640, y=10)
 
 	    # Faculty Information Button
 	faculty_info_btn = PhotoImage(file = "pic/faculty_info.png")
@@ -418,6 +470,9 @@ def new_win():
 	pg4_button_logout = customtkinter.CTkButton(master=page4,image=logout_btn, text="" ,
 	                                            corner_radius=30,bg_color='#ffffff', fg_color="#ffffff",hover_color="#6699cc", command=lambda: show_frame(page3))
 	pg4_button_logout.place(x=1075, y=469, height=178,width=197)
+
+	time_home()
+	count_reset()
 
 	 # ============= Developers Frame ========================================================================================================================================
 
@@ -1616,6 +1671,7 @@ def new_win():
 			string_day = strftime('%a')
 			day_lb_summary.configure(text= string_day)
 
+
 		def math_read_report():
 			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
@@ -1883,42 +1939,62 @@ def new_win():
 			employee_name_summary.configure(state='disabled')
 			employee_num_summary.configure(state='disabled')
 
-		# def count_data_math():
+		def count_data_math():
 
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			smry_present = conn.cursor()
+			smry_late = conn.cursor()
+			smry_absent = conn.cursor()
+			smry_earldis = conn.cursor()
+
+			employee_num_summary.configure(state='normal')
+			emplno = employee_num_summary.get()
+			# date_mathematics = date_lb_summary.cget("text")
+
+			smry_present.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Present' AND _count=0 ")
+			present_math = smry_present.fetchall()
+
+			smry_late.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Late' AND _count=0")
+			late_math = smry_late.fetchall()
+
+			smry_absent.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Absent' AND _count=0")
+			absent_math = smry_absent.fetchall()
+
+			smry_earldis.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Early Dismissal' AND _count=0")
+			earldis_math = smry_earldis.fetchall()
+
+			# num=1
+			# for i in range(0,num,1):
+			# 	storeval = present_math
+			# 	list.append(storeval)
+
+			total_present_lb_summary.configure(text=present_math)
+			total_late_lb_summary.configure(text=late_math)
+			total_absent_lb_summary.configure(text=absent_math)
+			total_earldis_lb_summary.configure(text=earldis_math)
+
+			employee_num_summary.configure(state='disabled')
+
+			conn.commit()
+			conn.close()
+
+		# def count_reset():
 		# 	conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
-		# 	smry_present = conn.cursor()
-		# 	smry_late = conn.cursor()
-		# 	smry_absent = conn.cursor()
-		# 	smry_earldis = conn.cursor()
+		# 	update_count = conn.cursor()
 
-		# 	employee_num_summary.configure(state='normal')
 		# 	emplno = employee_num_summary.get()
-		# 	# date_mathematics = date_lb_summary.cget("text")
+		# 	get_day = day_lb_summary.cget("text")
+		# 	get_time = time_lb_summary.cget("text")
+		# 	get_date = datetime.date.today()
 
-		# 	smry_present.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Present' AND _count=1 ")
-		# 	present_math = smry_present.fetchall()
-
-		# 	smry_late.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Late' AND _count=1")
-		# 	late_math = smry_late.fetchall()
-
-		# 	smry_absent.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Absent' AND _count=1")
-		# 	absent_math = smry_absent.fetchall()
-
-		# 	smry_earldis.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Early Dismissal' AND _count=1")
-		# 	earldis_math = smry_earldis.fetchall()
-
-		# 	# num=1
-		# 	# for i in range(0,num,1):
-		# 	# 	storeval = present_math
-		# 	# 	list.append(storeval)
-
-		# 	total_present_lb_summary.configure(text=present_math)
-		# 	total_late_lb_summary.configure(text=late_math)
-		# 	total_absent_lb_summary.configure(text=absent_math)
-		# 	total_earldis_lb_summary.configure(text=earldis_math)
-
-		# 	employee_num_summary.configure(state='disabled')
-
+		# 	if get_day == "Tue":
+		# 		update_count.execute("UPDATE subject_record SET _count=1  WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND _count=0 AND Date_Stamp < '"+ str(get_date) +"'")
+		# 		print(get_day)
+		# 		print(get_time)
+		# 		print(emplno)
+		# 		print(get_date)
+		# 	else:
+		# 		messagebox.showinfo("Message", "Failed to process")
 		# 	conn.commit()
 		# 	conn.close()
 
@@ -2079,6 +2155,7 @@ def new_win():
 
 		time_report()
 		display_info_math()
+		# count_reset()
 		count_data_math()
 
 	# ============= Psychology Summary Report  ========================================================================================================================
