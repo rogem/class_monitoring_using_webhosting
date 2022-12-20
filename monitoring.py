@@ -223,6 +223,7 @@ def new_win():
 		    return False
 
 		conn.commit()
+		conn.close()
 
 	def check_duplicate_Pass_admin():
 		Password = pg3_txtbox_pass.get()
@@ -239,6 +240,7 @@ def new_win():
 		    return False
 
 		conn.commit()
+		conn.close()
 
 	def verify_admin():
 		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
@@ -318,6 +320,7 @@ def new_win():
 		
 
 		conn.commit()
+		conn.close()
 		# try:
 		# 	if conn.is_connected():
 		# 	    db_Info = conn.get_server_info()
@@ -868,6 +871,7 @@ def new_win():
 			return False
 
 		conn.commit()
+		conn.close()
 
 		# Save data Entry to Database
 	def Save_Data():
@@ -903,6 +907,7 @@ def new_win():
 		
 		refreshTable_facultyinfo()
 		conn.commit()
+		conn.close()
 
 		# Search Data on Table
 	def search_data_facultyinfo():
@@ -935,6 +940,7 @@ def new_win():
 					search_fac_inf.delete(0, END)
 
 				conn.commit()
+				conn.close()
 		except Error as e:
 		    print("Error while connecting to MySQL", e)
 
@@ -959,6 +965,7 @@ def new_win():
 			cur_updateinfo = conn.cursor()
 			cur_updateinfo.execute("UPDATE faculty_data SET Employee_Number= '" + str(save_employee_number) + "', Employee_Name= '" + str(save_employee_name) + "', Department = '" + str(save_college_department) + "', Status = '" + str(save_status) + "' WHERE Employee_Number = '"+ str(save_employee_number)+"' or Employee_Name= '" + str(save_employee_name) + "'")
 			conn.commit()
+			conn.close()
 
 			department_combobox.configure(state='readonly')
 			# status_combobox_fac_inf.configure(state='disabled')
@@ -1100,6 +1107,40 @@ def new_win():
 			data_table_mntoring.insert(parent='', index='end', iid=results_monitoring, text="", values=(results_monitoring), tag="orow")
 		data_table_mntoring.tag_configure('orow', background='#EEEEEE')
 
+	def search_class_mntring():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
+		lookup_record = search_mntoring.get()
+		try:
+			if conn.is_connected():
+				searc_clss = conn.cursor()
+
+				# Clear the Treeview
+				for record in data_table_mntoring.get_children():
+					data_table_mntoring.delete(record)
+
+				search = '%' + lookup_record + '%'
+				searc_clss.execute("SELECT _Date,Employee_Number,Employee_Name,Department,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE _Date LIKE '"+ str(search) +"' or Employee_Number LIKE '"+ str(search) +"' or Employee_Name LIKE '"+ str(search) +"' or Department LIKE '"+ str(search) +"' or Subject LIKE '"+ str(search) +"' or Remarks LIKE '"+ str(search) +"'")
+				records = searc_clss.fetchall()
+
+				global count
+				count = 0
+
+				for record in records:
+					if count % 2 == 0:
+						data_table_mntoring.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9]), tag="evenrow")
+					else:
+						data_table_mntoring.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9]), tag="oddrow")
+					count += 1
+					data_table_mntoring.tag_configure('evenrow', background='#EEEEEE')
+					data_table_mntoring.tag_configure('oddrow', background='#EEEEEE')
+					search_mntoring.delete(0, END)
+
+				conn.commit()
+				conn.close()
+		except Error as e:
+		    print("Error while connecting to MySQL", e)
+
 		# Data Table "TreeView"
 	scrollbary_mntoring = Scrollbar(class_moniroting, orient=VERTICAL)
 	scrollbary_mntoring.place(x=1110, y=170, height=350)
@@ -1123,7 +1164,6 @@ def new_win():
 	data_table_mntoring.column("Employee ID", anchor=CENTER, width=100)
 	data_table_mntoring.column("Name", anchor=CENTER, width=100)
 	data_table_mntoring.column("Department", anchor=CENTER, width=100)
-	data_table_mntoring.column("Date", anchor=CENTER, width=100)
 	data_table_mntoring.column("Subject", anchor=CENTER, width=100)
 	data_table_mntoring.column("Class Schedule (Room)", anchor=CENTER, width=200)
 	data_table_mntoring.column("Class", anchor=CENTER, width=100)
@@ -1153,7 +1193,7 @@ def new_win():
 	    # Search Button
 	search_btn_mntoring = PhotoImage(file = "pic/btn_search.png")
 	mntoring_button_search = customtkinter.CTkButton(master=class_moniroting,image=search_btn_mntoring, text="" ,
-	                                            corner_radius=6,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command='search_data_log')
+	                                            corner_radius=6,bg='#ffffff', fg_color="#00436e",hover_color="#006699", command=search_class_mntring)
 	mntoring_button_search.place(x=760, y=116, height=25,width=95)
 
 	    # Show All Button
@@ -1192,7 +1232,7 @@ def new_win():
 
 		cur_acc = conn.cursor()
 
-		cur_acc.execute("SELECT Username,Password,Position,Status FROM account_data ")
+		cur_acc.execute("SELECT ID,Username,Password,Position,Status FROM account_data ")
 		results_account = cur_acc.fetchall()
 
 		conn.commit()
@@ -1230,20 +1270,23 @@ def new_win():
 		values = account_table.item(selected, 'values')
 
 		if values:
+			id_create.configure(state='normal')
 			status_create.configure(state='normal')
 			update_button_account.configure(state='normal')
 			position_create.configure(state='normal')
 
-			username_create.insert(0, values[0])
-			password_create.insert(0, values[1])
-			position_create.insert(0, values[2])
-			status_create.insert(0, values[3])
+			id_create.insert(0, values[0])
+			username_create.insert(0, values[1])
+			password_create.insert(0, values[2])
+			position_create.insert(0, values[3])
+			status_create.insert(0, values[4])
 
 			pass_check_button.deselect()
 			re_pass_check_button.deselect()
 
 			position_create.configure(state='readonly')
 			status_create.configure(state='readonly')
+			id_create.configure(state='disabled')
 		else:
 			messagebox.showinfo("Message", "There is no data on the table !!")
 
@@ -1264,6 +1307,7 @@ def new_win():
 			return False
 
 		conn.commit()
+		conn.close()
 
 	def check_duplicate_Pass():
 		vrfy_pass = re_password_create.get()
@@ -1280,6 +1324,7 @@ def new_win():
 			return False
 
 		conn.commit()
+		conn.close()
 
 	def Save_Data():
 		position_create.configure(state='normal')
@@ -1310,6 +1355,7 @@ def new_win():
 			save_acc.execute("""INSERT INTO account_data (Username,Password,Position,Status) 
 											VAlUES(%s,%s,%s,%s)""", insertdata)
 			conn.commit()
+			conn.close()
 
 			refreshTable_account()
 			reset_acc()
@@ -1319,8 +1365,11 @@ def new_win():
 
 	    # Updating Selected Data
 	def Update_Data_acc():
+		id_create.configure(state='normal')
 		position_create.configure(state='normal')
 
+		status = status_create.get()
+		user_id = id_create.get()
 		username = username_create.get()
 		password = password_create.get()
 		verify_pass = re_password_create.get()
@@ -1330,42 +1379,78 @@ def new_win():
 			messagebox.showinfo("Message", "Please fill up the blank entry!!")
 			return
 		elif password != verify_pass:
-			messagebox.showerror("Meaage" , "Password & Confirm Password Should Be Same")
+			messagebox.showerror("Meaage" , "Please verify your Password to be Updated")
 			return
 		else:
 			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
 
 			update_acc = conn.cursor()
-			update_acc.execute("UPDATE account_data SET Username= '" + str(username) + "', Password = '" + str(password) + "', Position = '" + str(position) + "'")
+			update_acc.execute("UPDATE account_data SET Username= '" + str(username) + "', Password = '" + str(password) + "', Position = '" + str(position) + "', Status = '" + str(status) + "' WHERE ID = '"+ user_id +"' ")
 			conn.commit()
+			conn.close()
 
 			reset_acc()
 			refreshTable_account()
 			messagebox.showinfo("Messgae", "Data Updated!!")
 
-	def combobox_event(event):
-		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
-		get_user = conn.cursor()
+	# def combobox_event(event):
+	# 	id_create.configure(state='normal')
+	# 	conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+	# 	get_user = conn.cursor()
 
-		status = status_create.get()
-		username = username_create.get()
-		password = password_create.get()
+	# 	user_id = id_create.get()
+	# 	status = status_create.get()
 
-		get_user.execute("UPDATE account_data SET  Status = '" + str(status) + "' WHERE Username = '"+ str(username)+"' AND Password = '"+ str(password)+"'")
+	# 	get_user.execute("UPDATE account_data SET Status = '" + str(status) + "' WHERE ID = '"+ user_id +"' ")
 
-		if status == 'Activated':
-			messagebox.showinfo("Messgae", "Status Activated!!")
-			# reset_acc()
-			refreshTable_account()
-		elif status == 'Deactivated':
-			messagebox.showinfo("Messgae", "Status Deactivated!!")
-			refreshTable_account()
-			# reset_acc()
+	# 	# refreshTable_account()
+	# 	if status == 'Activated':
+	# 		messagebox.showinfo("Messgae", "Status Activated!!")
+	# 		# reset_acc()
+	# 		refreshTable_account()
+	# 	elif status == 'Deactivated':
+	# 		messagebox.showinfo("Messgae", "Status Deactivated!!")
+	# 		refreshTable_account()
+	# 		# reset_acc()
 
-		refreshTable_account()
-		conn.commit()
-		# conn.close()
+	# 	# refreshTable_account()
+	# 	id_create.configure(state='disabled')
+	# 	conn.commit()
+	# 	conn.close()
 
+	def search_acc():
+		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+
+		lookup_record = search_create.get()
+		try:
+			if conn.is_connected():
+				searc_acc = conn.cursor()
+
+				# Clear the Treeview
+				for record in account_table.get_children():
+					account_table.delete(record)
+
+				search = '%' + lookup_record + '%'
+				searc_acc.execute("SELECT ID,Username,Password,Position,Status FROM account_data WHERE Username LIKE '"+ str(search) +"' or Password LIKE '"+ str(search) +"' or Position LIKE '"+ str(search) +"' or Status LIKE '"+ str(search) +"'")
+				records = searc_acc.fetchall()
+
+				global count
+				count = 0
+
+				for record in records:
+					if count % 2 == 0:
+						account_table.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+					else:
+						account_table.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+					count += 1
+					account_table.tag_configure('evenrow', background='#EEEEEE')
+					account_table.tag_configure('oddrow', background='#EEEEEE')
+					search_create.delete(0, END)
+
+				conn.commit()
+				conn.close()
+		except Error as e:
+		    print("Error while connecting to MySQL", e)
 
 	     # Data Table "TreeView"
 	scrollbarx_account = Scrollbar(create_account, orient=HORIZONTAL)
@@ -1383,15 +1468,17 @@ def new_win():
 	scrollbarx_account.configure(command=account_table.xview)
 	scrollbary_account.configure(command=account_table.yview)
 
-	account_table['columns'] = ("Username","Password","Position","Status")
+	account_table['columns'] = ("ID","Username","Password","Position","Status")
 	# Format Columns
 	account_table.column("#0", width=0, stretch=NO)
+	account_table.column("ID", anchor=CENTER, width=1)
 	account_table.column("Username", anchor=CENTER, width=50)
 	account_table.column("Password", anchor=CENTER, width=50)
 	account_table.column("Position", anchor=CENTER, width=50)
 	account_table.column("Status", anchor=CENTER, width=50)
 
 	# Create Headings
+	account_table.heading("ID", text="ID", anchor=CENTER)
 	account_table.heading("Username", text="Username", anchor=CENTER)
 	account_table.heading("Password", text="Password", anchor=CENTER)
 	account_table.heading("Position", text="Position", anchor=CENTER)
@@ -1400,6 +1487,10 @@ def new_win():
 	account_table.bind("<ButtonRelease-1>", select_row_acc)
 
 	refreshTable_account()
+
+	    # Entry ID
+	id_create = Entry(create_account, font="Heltvetica 13 bold" , state='disabled')
+	id_create.place(x=345, y=340, width=160, height=25)
 
 	    # Entry Username
 	username_create = Entry(create_account, font="Heltvetica 13 bold")
@@ -1435,7 +1526,7 @@ def new_win():
 
 	    # Entry Status
 	status_create = ttk.Combobox(create_account,state='disabled', values=["Activated", "Deactivated"])
-	status_create.bind("<<ComboboxSelected>>", combobox_event)
+	# status_create.bind("<<ComboboxSelected>>", combobox_event)
 	status_create.place(x=345, y=511, width=160, height=25)
 
 		# Create Button
@@ -1460,10 +1551,11 @@ def new_win():
 	search_create_val = StringVar()
 	search_create = Entry(create_account, textvariable = search_create_val, font="Heltvetica 13")
 	search_create.place(x=825, y=203, width=200, height=22)
+
 	    # Search Button
 	create_search_btn = PhotoImage(file = "pic/btn_search.png")
 	create_button_search = customtkinter.CTkButton(master=create_account,image=create_search_btn, text="" ,
-	                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command= 'search_data')
+	                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command=search_acc)
 	create_button_search.place(x=1065, y=202, height=25,width=100)
 
 	    # Show All Button
@@ -1510,7 +1602,7 @@ def new_win():
 
 		emp_num = employee_num_math_rec.get()
 		emp_name = employee_name_math_rec.get()
-		List=[]
+		
 
 		    # Get Current Time and Date
 		def time_report():
@@ -1545,25 +1637,33 @@ def new_win():
 
 		def display_info_math():
 			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')	
+			try:
+				if conn.is_connected():
+					Dept_math = conn.cursor()
 
-			Dept = conn.cursor()
+					# Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+					# dept = Dept.fetchone()
+					Dept_math.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
+					dept = Dept_math.fetchone()
 
-			Dept.execute("SELECT Department FROM subject_record WHERE Employee_Number='"+ str(emp_num) +"' AND Employee_Name='"+ str(emp_name) +"'")
-			dept = Dept.fetchone()
+					summary_department_combobox.configure(state='normal')
+					employee_num_summary.configure(state='normal')
+					employee_name_summary.configure(state='normal')
 
-			summary_department_combobox.configure(state='normal')
-			employee_num_summary.configure(state='normal')
-			employee_name_summary.configure(state='normal')
+					summary_department_combobox.insert(0,dept)
+					employee_num_summary.insert(0,emp_num)
+					employee_name_summary.insert(0,emp_name)
 
-			summary_department_combobox.insert(0,dept)
-			employee_num_summary.insert(0,emp_num)
-			employee_name_summary.insert(0,emp_name)
+					summary_department_combobox.configure(state='disabled')
+					employee_num_summary.configure(state='disabled')
+					employee_name_summary.configure(state='disabled')
 
-			summary_department_combobox.configure(state='disabled')
-			employee_num_summary.configure(state='disabled')
-			employee_name_summary.configure(state='disabled')
+			except Error as e:
+			    print("Error while connecting to MySQL", e)
+			
 
 			conn.commit()
+			conn.close()
 
 		def search_date_math():
 			date_mathematics = dtr_summary.get()
@@ -1598,6 +1698,7 @@ def new_win():
 			employee_num_summary.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_present():
 			date_mathematics = date_lb_summary.cget("text")
@@ -1631,6 +1732,7 @@ def new_win():
 			summary_button_print1.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_late():
 			date_mathematics = date_lb_summary.cget("text")
@@ -1664,6 +1766,7 @@ def new_win():
 			summary_button_print1.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_absent():
 			date_mathematics = date_lb_summary.cget("text")
@@ -1697,6 +1800,7 @@ def new_win():
 			summary_button_print1.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_earlydismissal():
 			date_mathematics = date_lb_summary.cget("text")
@@ -1730,6 +1834,7 @@ def new_win():
 			summary_button_print1.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def print_data_math_report():
 			summary_department_combobox.configure(state='normal')
@@ -1778,37 +1883,44 @@ def new_win():
 			employee_name_summary.configure(state='disabled')
 			employee_num_summary.configure(state='disabled')
 
-		# def count_data_report():
+		# def count_data_math():
+
+		# 	conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
 		# 	smry_present = conn.cursor()
 		# 	smry_late = conn.cursor()
 		# 	smry_absent = conn.cursor()
 		# 	smry_earldis = conn.cursor()
 
-		# 	date_mathematics = date_lb_summary.cget("text")
+		# 	employee_num_summary.configure(state='normal')
+		# 	emplno = employee_num_summary.get()
+		# 	# date_mathematics = date_lb_summary.cget("text")
 
-		# 	smry_present.execute("SELECT COUNT(Status) FROM attendance_record WHERE  Department='Mathematics' AND Status='Present' AND _Date='"+ str(date_mathematics) +"'")
+		# 	smry_present.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Present' AND _count=1 ")
 		# 	present_math = smry_present.fetchall()
 
-		# 	smry_late.execute("SELECT COUNT(Status) FROM attendance_record WHERE  Department='Mathematics' AND Status='Late' AND _Date='"+ str(date_mathematics) +"'")
+		# 	smry_late.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Late' AND _count=1")
 		# 	late_math = smry_late.fetchall()
 
-		# 	smry_absent.execute("SELECT COUNT(Status) FROM attendance_record WHERE Department='Mathematics' AND Status='Absent' AND _Date='"+ str(date_mathematics) +"'")
+		# 	smry_absent.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Absent' AND _count=1")
 		# 	absent_math = smry_absent.fetchall()
 
-		# 	smry_earldis.execute("SELECT COUNT(Status) FROM attendance_record WHERE Department='Mathematics' AND Status='Early Dismissal' AND _Date='"+ str(date_mathematics) +"'")
+		# 	smry_earldis.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Early Dismissal' AND _count=1")
 		# 	earldis_math = smry_earldis.fetchall()
 
-		# 	num=1
-		# 	for i in range(0,num,1):
-		# 		storeval = present_math
-		# 		list.append(storeval)
+		# 	# num=1
+		# 	# for i in range(0,num,1):
+		# 	# 	storeval = present_math
+		# 	# 	list.append(storeval)
 
-			# total_present_lb_summary.configure(text=present_math)
-			# total_late_lb_summary.configure(text=late_math)
-			# total_absent_lb_summary.configure(text=absent_math)
-			# total_earldis_lb_summary.configure(text=earldis_math)
+		# 	total_present_lb_summary.configure(text=present_math)
+		# 	total_late_lb_summary.configure(text=late_math)
+		# 	total_absent_lb_summary.configure(text=absent_math)
+		# 	total_earldis_lb_summary.configure(text=earldis_math)
 
-			# conn.commit()
+		# 	employee_num_summary.configure(state='disabled')
+
+		# 	conn.commit()
+		# 	conn.close()
 
 		         # Data Table "TreeView"
 		scrollbarx_summary = Scrollbar(popupwindow, orient=HORIZONTAL)
@@ -1879,21 +1991,21 @@ def new_win():
 		employee_name_summary = Entry(popupwindow, state='disabled')
 		employee_name_summary.place(x=240, y=330, width=80)
 
-		    # Entry Attendance Satatus
-		att_status_summary = Entry(popupwindow, state='disabled')
-		att_status_summary.place(x=240, y=352, width=80)
+		#     # Entry Attendance Satatus
+		# att_status_summary = Entry(popupwindow, state='disabled')
+		# att_status_summary.place(x=240, y=352, width=80)
 
-		    # Entry Time In
-		time_in_summary = Entry(popupwindow, state='disabled')
-		time_in_summary.place(x=370, y=308, width=80)
+		#     # Entry Time In
+		# time_in_summary = Entry(popupwindow, state='disabled')
+		# time_in_summary.place(x=370, y=308, width=80)
 
-		    # Entry Time Out
-		time_out_summary = Entry(popupwindow, state='disabled')
-		time_out_summary.place(x=370, y=330, width=80)
+		#     # Entry Time Out
+		# time_out_summary = Entry(popupwindow, state='disabled')
+		# time_out_summary.place(x=370, y=330, width=80)
 
-		    # Entry Date
-		date_summary = Entry(popupwindow, state='disabled')
-		date_summary.place(x=370, y=352, width=80)
+		#     # Entry Date
+		# date_summary = Entry(popupwindow, state='disabled')
+		# date_summary.place(x=370, y=352, width=80)
 
 		   # Entry dtr
 		dtr_summary = Entry(popupwindow)
@@ -1967,6 +2079,7 @@ def new_win():
 
 		time_report()
 		display_info_math()
+		count_data_math()
 
 	# ============= Psychology Summary Report  ========================================================================================================================
 
@@ -2051,6 +2164,7 @@ def new_win():
 			employee_name_summary_psyc.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_date_psyc():
 			date_psychology = dtr_summary_psyc.get()
@@ -2085,6 +2199,7 @@ def new_win():
 			employee_num_summary_psyc.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_present():
 			date_psychology = date_lb_summary_psyc.cget("text")
@@ -2119,6 +2234,7 @@ def new_win():
 			summary_button_print1_psyc.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_late():
 			date_psychology = date_lb_summary_psyc.cget("text")
@@ -2152,6 +2268,7 @@ def new_win():
 			summary_button_print1_psyc.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_absent():
 			date_psychology = date_lb_summary_psyc.cget("text")
@@ -2185,6 +2302,7 @@ def new_win():
 			summary_button_print1_psyc.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_earlydismissal():
 			date_psychology = date_lb_summary_psyc.cget("text")
@@ -2218,6 +2336,7 @@ def new_win():
 			summary_button_print1_psyc.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def print_data_psyc():
 			summary_department_combobox_psyc.configure(state='normal')
@@ -2336,21 +2455,21 @@ def new_win():
 		employee_name_summary_psyc = Entry(popupwindow_psyc, state='disabled')
 		employee_name_summary_psyc.place(x=240, y=330, width=80)
 
-		    # Entry Attendance Satatus
-		att_status_summary_psyc = Entry(popupwindow_psyc, state='disabled')
-		att_status_summary_psyc.place(x=240, y=352, width=80)
+		#     # Entry Attendance Satatus
+		# att_status_summary_psyc = Entry(popupwindow_psyc, state='disabled')
+		# att_status_summary_psyc.place(x=240, y=352, width=80)
 
-		    # Entry Time In
-		time_in_summary_psyc = Entry(popupwindow_psyc, state='disabled')
-		time_in_summary_psyc.place(x=370, y=308, width=80)
+		#     # Entry Time In
+		# time_in_summary_psyc = Entry(popupwindow_psyc, state='disabled')
+		# time_in_summary_psyc.place(x=370, y=308, width=80)
 
-		    # Entry Time Out
-		time_out_summary_psyc = Entry(popupwindow_psyc, state='disabled')
-		time_out_summary_psyc.place(x=370, y=330, width=80)
+		#     # Entry Time Out
+		# time_out_summary_psyc = Entry(popupwindow_psyc, state='disabled')
+		# time_out_summary_psyc.place(x=370, y=330, width=80)
 
-		    # Entry Date
-		date_summary_psyc_psyc = Entry(popupwindow_psyc, state='disabled')
-		date_summary_psyc_psyc.place(x=370, y=352, width=80)
+		#     # Entry Date
+		# date_summary_psyc_psyc = Entry(popupwindow_psyc, state='disabled')
+		# date_summary_psyc_psyc.place(x=370, y=352, width=80)
 
 		   # Entry dtr
 		dtr_summary_psyc = Entry(popupwindow_psyc,)
@@ -2507,6 +2626,7 @@ def new_win():
 			employee_name_summary_applied.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_date_applied():
 			date_physics= dtr_summary_applied.get()
@@ -2541,6 +2661,7 @@ def new_win():
 			employee_num_summary_applied.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_present():
 			date_physics = date_lb_summary_applied.cget("text")
@@ -2574,6 +2695,7 @@ def new_win():
 			employee_num_summary_applied.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_late():
 			date_physics = date_lb_summary_applied.cget("text")
@@ -2607,6 +2729,7 @@ def new_win():
 			employee_num_summary_applied.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_absent():
 			date_physics = date_lb_summary_applied.cget("text")
@@ -2640,6 +2763,7 @@ def new_win():
 			employee_num_summary_applied.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_earlydismissal():
 			date_physics= date_lb_summary_applied.cget("text")
@@ -2673,6 +2797,7 @@ def new_win():
 			employee_num_summary_applied.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def print_data_applied():
 			summary_department_combobox_applied.configure(state='normal')
@@ -2793,21 +2918,21 @@ def new_win():
 		employee_name_summary_applied = Entry(popupwindow_applied, state='disabled')
 		employee_name_summary_applied.place(x=240, y=330, width=80)
 
-		    # Entry Attendance Satatus
-		att_status_summary_applied = Entry(popupwindow_applied, state='disabled')
-		att_status_summary_applied.place(x=240, y=352, width=80)
+		#     # Entry Attendance Satatus
+		# att_status_summary_applied = Entry(popupwindow_applied, state='disabled')
+		# att_status_summary_applied.place(x=240, y=352, width=80)
 
-		    # Entry Time In
-		time_in_summary_applied = Entry(popupwindow_applied, state='disabled')
-		time_in_summary_applied.place(x=370, y=308, width=80)
+		#     # Entry Time In
+		# time_in_summary_applied = Entry(popupwindow_applied, state='disabled')
+		# time_in_summary_applied.place(x=370, y=308, width=80)
 
-		    # Entry Time Out
-		time_out_summary_applied = Entry(popupwindow_applied, state='disabled')
-		time_out_summary_applied.place(x=370, y=330, width=80)
+		#     # Entry Time Out
+		# time_out_summary_applied = Entry(popupwindow_applied, state='disabled')
+		# time_out_summary_applied.place(x=370, y=330, width=80)
 
-		    # Entry Date
-		date_summary_applied = Entry(popupwindow_applied, state='disabled')
-		date_summary_applied.place(x=370, y=352, width=80)
+		#     # Entry Date
+		# date_summary_applied = Entry(popupwindow_applied, state='disabled')
+		# date_summary_applied.place(x=370, y=352, width=80)
 
 		   # Entry dtr
 		dtr_summary_applied = Entry(popupwindow_applied)
@@ -2965,6 +3090,7 @@ def new_win():
 			employee_name_summary_ite.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_date():
 			date_IT = dtr_summary_ite.get()
@@ -2999,6 +3125,7 @@ def new_win():
 			employee_num_summary_ite.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_present():
 			date_IT = date_lb_summary_ite.cget("text")
@@ -3032,6 +3159,7 @@ def new_win():
 			employee_num_summary_ite.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_late():
 			date_IT = date_lb_summary_ite.cget("text")
@@ -3065,6 +3193,7 @@ def new_win():
 			employee_num_summary_ite.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_absent():
 			date_IT = date_lb_summary_ite.cget("text")
@@ -3098,6 +3227,7 @@ def new_win():
 			employee_num_summary_ite.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def search_earlydismissal():
 			date_IT = date_lb_summary_ite.cget("text")
@@ -3131,6 +3261,7 @@ def new_win():
 			employee_num_summary_ite.configure(state='disabled')
 
 			conn.commit()
+			conn.close()
 
 		def print_data_ite():
 			summary_department_combobox_ite.configure(state='normal')
@@ -3248,21 +3379,21 @@ def new_win():
 		employee_name_summary_ite = Entry(popupwindow_ite, state='disabled')
 		employee_name_summary_ite.place(x=240, y=330, width=80)
 
-		    # Entry Attendance Satatus
-		att_status_summary_ite = Entry(popupwindow_ite, state='disabled')
-		att_status_summary_ite.place(x=240, y=352, width=80)
+		#     # Entry Attendance Satatus
+		# att_status_summary_ite = Entry(popupwindow_ite, state='disabled')
+		# att_status_summary_ite.place(x=240, y=352, width=80)
 
-		    # Entry Time In
-		time_in_summary_ite = Entry(popupwindow_ite, state='disabled')
-		time_in_summary_ite.place(x=370, y=308, width=80)
+		#     # Entry Time In
+		# time_in_summary_ite = Entry(popupwindow_ite, state='disabled')
+		# time_in_summary_ite.place(x=370, y=308, width=80)
 
-		    # Entry Time Out
-		time_out_summary_ite = Entry(popupwindow_ite, state='disabled')
-		time_out_summary_ite.place(x=370, y=330, width=80)
+		#     # Entry Time Out
+		# time_out_summary_ite = Entry(popupwindow_ite, state='disabled')
+		# time_out_summary_ite.place(x=370, y=330, width=80)
 
-		    # Entry Date
-		date_summary_ite = Entry(popupwindow_ite, state='disabled')
-		date_summary_ite.place(x=370, y=352, width=80)
+		#     # Entry Date
+		# date_summary_ite = Entry(popupwindow_ite, state='disabled')
+		# date_summary_ite.place(x=370, y=352, width=80)
 
 		   # Entry dtr
 		dtr_summary_ite = Entry(popupwindow_ite)
@@ -3381,6 +3512,7 @@ def new_win():
 		total_absent_lb_math_rec.configure(text=absent_math)
 
 		conn.commit()
+		conn.close()
 
 	    # Get And Disply the data in the table
 	def math_read():
@@ -3430,6 +3562,7 @@ def new_win():
 			search_math_rec.delete(0, END)
 
 		conn.commit()
+		conn.close()
 
 	def print_math():
 		file = filedialog.asksaveasfilename(title="Select file",initialfile="datafile.xlsx", defaultextension=".xlsx",filetypes=[("Execl file","*.xlsx")])
@@ -3548,6 +3681,7 @@ def new_win():
 			search_math_rec_IR.delete(0, END)
 
 		conn.commit()
+		conn.close()
 
 	def select_row_math(e):
 		selected = data_table_math_rec_IR.focus()
@@ -3740,6 +3874,7 @@ def new_win():
 		total_absent_lb_psyc.configure(text=absent_psyc)
 
 		conn.commit()
+		conn.close()
 
 		# Get And Disply the data in the table
 	def psyc_read():
@@ -3790,6 +3925,7 @@ def new_win():
 			search_psyc.delete(0, END)
 
 		conn.commit()
+		conn.close()
 
 	def print_psyc():
 		file = filedialog.asksaveasfilename(title="Select file",initialfile="datafile.xlsx", defaultextension=".xlsx",filetypes=[("Execl file","*.xlsx")])
@@ -3909,6 +4045,7 @@ def new_win():
 			search_psyc_IR.delete(0, END)
 
 		conn.commit()
+		conn.close()
 
 	def select_row_psyc(e):
 		selected = data_table_psyc_IR.focus()
@@ -4102,6 +4239,7 @@ def new_win():
 		total_absent_lb_applied.configure(text=absent_physics)
 
 		conn.commit()
+		conn.close()
 
             # Get And Disply the data in the table
 	def applied_read():
@@ -4152,6 +4290,7 @@ def new_win():
 			search_applied.delete(0, END)
 
 		conn.commit()
+		conn.close()
 
 	def print_applied():
 		file = filedialog.asksaveasfilename(title="Select file",initialfile="datafile.xlsx", defaultextension=".xlsx",filetypes=[("Execl file","*.xlsx")])
@@ -4271,6 +4410,7 @@ def new_win():
 			search_applied_IR.delete(0, END)
 
 		conn.commit()
+		conn.close()
 
 	def select_row_applied_IR(e):
 		selected = data_table_applied_IR.focus()
@@ -4461,6 +4601,7 @@ def new_win():
 		total_absent_lb_ite.configure(text=absent_IT)
 
 		conn.commit()
+		conn.close()
 
         # Get And Disply the data in the table
 	def ite_read():
@@ -4511,6 +4652,7 @@ def new_win():
 			search_ite.delete(0, END)
 
 		conn.commit()
+		conn.close()
 
 	def print_ite():
 		file = filedialog.asksaveasfilename(title="Select file",initialfile="datafile.xlsx", defaultextension=".xlsx",filetypes=[("Execl file","*.xlsx")])
@@ -4631,6 +4773,7 @@ def new_win():
 			search_ite_IR.delete(0, END)
 
 		conn.commit()
+		conn.close()
 
 	def select_row_ite_IR(e):
 		selected = data_table_ite_IR.focus()
