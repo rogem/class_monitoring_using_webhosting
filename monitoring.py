@@ -386,18 +386,15 @@ def new_win():
 		conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
 		update_count = conn.cursor()
 
-		# emplno = employee_num_summary.get()
 		get_day = day_lb_pg4.cget("text")
-		# get_time = time_lb_pg4.cget("text")
 		
-
-		if get_day == "Tue":
+		if get_day == "Wed":
 			get_date = datetime.date.today()
-			update_count.execute("UPDATE subject_record SET _count=0  WHERE _count=1 AND Date_Stamp < '"+ str(get_date) +"'")
-			print(get_day)
-			print(get_date)
-		else:
-			messagebox.showinfo("Message", "Failed to process")
+			update_count.execute("UPDATE subject_record SET _count=1  WHERE _count=0 AND Date_Stamp < '"+ str(get_date) +"'")
+			# print(get_day)
+			# print(get_date)
+		# else:
+		# 	messagebox.showinfo("Message", "Failed to process")
 		conn.commit()
 		conn.close()
 
@@ -1768,7 +1765,7 @@ def new_win():
 			for record in data_table_summary.get_children():
 				data_table_summary.delete(record)
 
-			cur_presentmath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Present' AND _Date='"+ str(date_mathematics) +"'")
+			cur_presentmath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Present' AND _Date='"+ str(date_mathematics) +"' AND _count=0")
 			records = cur_presentmath.fetchall()
 
 			global count
@@ -1802,7 +1799,7 @@ def new_win():
 			for record in data_table_summary.get_children():
 				data_table_summary.delete(record)
 
-			cur_mathlate.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Late' AND _Date='"+ str(date_mathematics) +"'")
+			cur_mathlate.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Late' AND _Date='"+ str(date_mathematics) +"' AND _count=0")
 			records = cur_mathlate.fetchall()
 
 			global count
@@ -1836,7 +1833,7 @@ def new_win():
 			for record in data_table_summary.get_children():
 				data_table_summary.delete(record)
 
-			cur_absentmath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Absent' AND _Date='"+ str(date_mathematics) +"'")
+			cur_absentmath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Absent' AND _Date='"+ str(date_mathematics) +"' AND _count=0")
 			records = cur_absentmath.fetchall()
 
 			global count
@@ -1870,7 +1867,7 @@ def new_win():
 			for record in data_table_summary.get_children():
 				data_table_summary.delete(record)
 
-			cur_edmath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Early Dismissal' AND _Date='"+ str(date_mathematics) +"'")
+			cur_edmath.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Early Dismissal' AND _Date='"+ str(date_mathematics) +"' AND _count=0")
 			records = cur_edmath.fetchall()
 
 			global count
@@ -1940,7 +1937,6 @@ def new_win():
 			employee_num_summary.configure(state='disabled')
 
 		def count_data_math():
-
 			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
 			smry_present = conn.cursor()
 			smry_late = conn.cursor()
@@ -1951,7 +1947,7 @@ def new_win():
 			emplno = employee_num_summary.get()
 			# date_mathematics = date_lb_summary.cget("text")
 
-			smry_present.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Present' AND _count=0 ")
+			smry_present.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Present' AND _count=0")
 			present_math = smry_present.fetchall()
 
 			smry_late.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Late' AND _count=0")
@@ -1962,11 +1958,6 @@ def new_win():
 
 			smry_earldis.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Mathematics' AND Remarks='Early Dismissal' AND _count=0")
 			earldis_math = smry_earldis.fetchall()
-
-			# num=1
-			# for i in range(0,num,1):
-			# 	storeval = present_math
-			# 	list.append(storeval)
 
 			total_present_lb_summary.configure(text=present_math)
 			total_late_lb_summary.configure(text=late_math)
@@ -2291,7 +2282,7 @@ def new_win():
 			for record in data_table_summary_psyc.get_children():
 				data_table_summary_psyc.delete(record)
 
-			cur_prepsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Present' AND _Date='"+ str(date_psychology) +"'")
+			cur_prepsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Present' AND _Date='"+ str(date_psychology) +"' AND _count=0")
 			records = cur_prepsyc.fetchall()
 
 			global count
@@ -2325,7 +2316,7 @@ def new_win():
 			for record in data_table_summary_psyc.get_children():
 				data_table_summary_psyc.delete(record)
 
-			cur_ltpsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Late' AND _Date='"+ str(date_psychology) +"'")
+			cur_ltpsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Late' AND _Date='"+ str(date_psychology) +"' AND _count=0")
 			records = cur_ltpsyc.fetchall()
 
 			global count
@@ -2359,7 +2350,7 @@ def new_win():
 			for record in data_table_summary_psyc.get_children():
 				data_table_summary_psyc.delete(record)
 
-			cur_abpsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Absent' AND _Date='"+ str(date_psychology) +"'")
+			cur_abpsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Absent' AND _Date='"+ str(date_psychology) +"' AND _count=0")
 			records = cur_abpsyc.fetchall()
 
 			global count
@@ -2393,7 +2384,7 @@ def new_win():
 			for record in data_table_summary_psyc.get_children():
 				data_table_summary_psyc.delete(record)
 
-			cur_edpsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Early Dismissal' AND _Date='"+ str(date_psychology) +"'")
+			cur_edpsyc.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Early Dismissal' AND _Date='"+ str(date_psychology) +"' AND _count=0")
 			records = cur_edpsyc.fetchall()
 
 			global count
@@ -2461,6 +2452,39 @@ def new_win():
 			summary_department_combobox_psyc.configure(state='disabled')
 			employee_name_summary_psyc.configure(state='disabled')
 			employee_num_summary_psyc.configure(state='disabled')
+
+		def count_data_psyc():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			smry_present = conn.cursor()
+			smry_late = conn.cursor()
+			smry_absent = conn.cursor()
+			smry_earldis = conn.cursor()
+
+			employee_num_summary_psyc.configure(state='normal')
+			emplno = employee_num_summary_psyc.get()
+			# date_mathematics = date_lb_summary.cget("text")
+
+			smry_present.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Present' AND _count=0")
+			present_psyc = cursor.fetchall()
+
+			smry_late.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Late' AND _count=0")
+			late_psyc = cursor.fetchall()
+
+			smry_absent.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Absent' AND _count=0")
+			absent_psyc = cursor.fetchall()
+
+			smry_earldis.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Psychology' AND Remarks='Early Dismissal' AND _count=0")
+			earldis_psyc = cursor.fetchall()
+
+			total_present_lb_summary_psyc.configure(text=present_psyc)
+            total_late_lb_summary_psyc.configure(text=late_psyc)
+            total_absent_lb_summary_psyc.configure(text=absent_psyc)
+            total_earldis_lb_summary_psyc.configure(text=earldis_psyc)
+
+			employee_num_summary_psyc.configure(state='disabled')
+
+			conn.commit()
+			conn.close()
 
 		         # Data Table "TreeView"
 		scrollbarx_summary_psyc = Scrollbar(popupwindow_psyc, orient=HORIZONTAL)
@@ -2620,6 +2644,7 @@ def new_win():
 
 		time_report()
 		display_info_psyc()
+		count_data_psyc()
 
 	# ============= Applied Physics Summary Report ========================================================================================================================
 
@@ -2752,7 +2777,7 @@ def new_win():
 			for record in data_table_summary_applied.get_children():
 				data_table_summary_applied.delete(record)
 
-			cur_prapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Present' AND _Date='"+ str(date_physics) +"'")
+			cur_prapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Present' AND _Date='"+ str(date_physics) +"' AND _count=0")
 			records = cur_prapplied.fetchall()
 
 			global count
@@ -2786,7 +2811,7 @@ def new_win():
 			for record in data_table_summary_applied.get_children():
 				data_table_summary_applied.delete(record)
 
-			cur_ltapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Late' AND _Date='"+ str(date_physics) +"'")
+			cur_ltapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Late' AND _Date='"+ str(date_physics) +"' AND _count=0")
 			records = cur_ltapplied.fetchall()
 
 			global count
@@ -2820,7 +2845,7 @@ def new_win():
 			for record in data_table_summary_applied.get_children():
 				data_table_summary_applied.delete(record)
 
-			cur_abapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Absent' AND _Date='"+ str(date_physics) +"'")
+			cur_abapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Absent' AND _Date='"+ str(date_physics) +"' AND _count=0")
 			records = cur_abapplied.fetchall()
 
 			global count
@@ -2854,7 +2879,7 @@ def new_win():
 			for record in data_table_summary_applied.get_children():
 				data_table_summary_applied.delete(record)
 
-			cur_edapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Early Dismissal' AND _Date='"+ str(date_physics) +"'")
+			cur_edapplied.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Early Dismissal' AND _Date='"+ str(date_physics) +"' AND _count=0")
 			records = cur_edapplied.fetchall()
 
 			global count
@@ -2923,6 +2948,38 @@ def new_win():
 			employee_name_summary_applied.configure(state='disabled')
 			employee_num_summary_applied.configure(state='disabled')
 
+		def count_data_applied():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			smry_present = conn.cursor()
+			smry_late = conn.cursor()
+			smry_absent = conn.cursor()
+			smry_earldis = conn.cursor()
+
+			employee_num_summary_applied.configure(state='normal')
+			emplno = employee_num_summary_applied.get()
+			# date_mathematics = date_lb_summary.cget("text")
+
+			smry_present.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Present' AND _count=0")
+			present_applied = smry_present.fetchall()
+
+			smry_late.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Late' AND _count=0")
+			late_applied = smry_late.fetchall()
+
+			smry_absent.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Absent' AND _count=0")
+			absent_applied = smry_absent.fetchall()
+
+			smry_earldis.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='Applied Physics' AND Remarks='Early Dismissal' AND _count=0")
+			earldis_applied = smry_earldis.fetchall()
+
+			total_present_lb_summary_applied.configure(text=present_applied)
+			total_late_lb_summary_applied.configure(text=late_applied)
+			total_absent_lb_summary_applied.configure(text=absent_applied)
+			total_earldis_lb_summary_applied.configure(text=earldis_applied)
+
+			employee_num_summary_applied.configure(state='disabled')
+
+			conn.commit()
+			conn.close()
 
 		    # Data Table "TreeView"
 		scrollbarx_summary_applied = Scrollbar(popupwindow_applied, orient=HORIZONTAL)
@@ -3083,6 +3140,7 @@ def new_win():
 
 		time_report()
 		display_info_applied()
+		count_data_applied():
 
 	# ============= ITE Summary Report In Frame ========================================================================================================================
 
@@ -3216,7 +3274,7 @@ def new_win():
 			for record in data_table_summary_ite.get_children():
 				data_table_summary_ite.delete(record)
 
-			cur_prite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Present' AND _Date='"+ str(date_IT) +"'")
+			cur_prite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Present' AND _Date='"+ str(date_IT) +"' AND _count=0")
 			records = cur_prite.fetchall()
 
 			global count
@@ -3250,7 +3308,7 @@ def new_win():
 			for record in data_table_summary_ite.get_children():
 				data_table_summary_ite.delete(record)
 
-			cur_ltite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Late' AND _Date='"+ str(date_IT) +"'")
+			cur_ltite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Late' AND _Date='"+ str(date_IT) +"' AND _count=0")
 			records = cur_ltite.fetchall()
 
 			global count
@@ -3284,7 +3342,7 @@ def new_win():
 			for record in data_table_summary_ite.get_children():
 				data_table_summary_ite.delete(record)
 
-			cur_abite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Absent' AND _Date='"+ str(date_IT) +"'")
+			cur_abite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Absent' AND _Date='"+ str(date_IT) +"' AND _count=0")
 			records = cur_abite.fetchall()
 
 			global count
@@ -3318,7 +3376,7 @@ def new_win():
 			for record in data_table_summary_ite.get_children():
 				data_table_summary_ite.delete(record)
 
-			cur_edite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Early Dismissal' AND _Date='"+ str(date_IT) +"'")
+			cur_edite.execute("SELECT _Date,Subject, CONCAT(Day,' ',Start_time,' - ',End_time,' ','(',Room,')') ,Class,_Start,_End,Remarks FROM subject_record WHERE Employee_Number='"+ str(emplno) +"'AND Department='ITE' AND Remarks='Early Dismissal' AND _Date='"+ str(date_IT) +"' AND _count=0")
 			records = cur_edite.fetchall()
 
 			global count
@@ -3385,6 +3443,40 @@ def new_win():
 			summary_department_combobox_ite.configure(state='disabled')
 			employee_name_summary_ite.configure(state='disabled')
 			employee_num_summary_ite.configure(state='disabled')
+
+		def count_data_math():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			smry_present = conn.cursor()
+			smry_late = conn.cursor()
+			smry_absent = conn.cursor()
+			smry_earldis = conn.cursor()
+
+			employee_num_summary_ite.configure(state='normal')
+			emplno = employee_num_summary_ite.get()
+			# date_mathematics = date_lb_summary.cget("text")
+
+			smry_present.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='ITE' AND Remarks='Present' AND _count=0")
+			present_ite = smry_present.fetchall()
+
+			smry_late.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='ITE' AND Remarks='Late' AND _count=0")
+			late_ite = smry_late.fetchall()
+
+			smry_absent.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='ITE' AND Remarks='Absent' AND _count=0")
+			absent_ite = smry_absent.fetchall()
+
+			smry_earldis.execute("SELECT COUNT(_count) FROM subject_record WHERE Employee_Number='"+ str(emplno) +"' AND Department='ITE' AND Remarks='Early Dismissal' AND _count=0")
+			earldis_ite = smry_earldis.fetchall()
+
+			total_present_lb_summary_ite.configure(text=present_ite)
+			total_late_lb_summary_ite.configure(text=late_ite)
+			total_absent_lb_summary_ite.configure(text=absent_ite)
+			total_earldis_lb_summary_ite.configure(text=earldis_ite)
+
+			employee_num_summary_ite.configure(state='disabled')
+
+			conn.commit()
+			conn.close()
+
 
 		         # Data Table "TreeView"
 		scrollbarx_summary_ite = Scrollbar(popupwindow_ite, orient=HORIZONTAL)
@@ -3544,6 +3636,7 @@ def new_win():
 
 		time_report()
 		display_info_ite()
+		count_data_math()
 
 ############################################################################### Attendance Rerord Part ###################################################################################################################################
 
