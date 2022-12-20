@@ -388,7 +388,7 @@ def new_win():
 
 		get_day = day_lb_pg4.cget("text")
 		
-		if get_day == "Wed":
+		if get_day == "Mon":
 			get_date = datetime.date.today()
 			update_count.execute("UPDATE subject_record SET _count=1  WHERE _count=0 AND Date_Stamp < '"+ str(get_date) +"'")
 			# print(get_day)
@@ -2477,9 +2477,9 @@ def new_win():
 			earldis_psyc = cursor.fetchall()
 
 			total_present_lb_summary_psyc.configure(text=present_psyc)
-            total_late_lb_summary_psyc.configure(text=late_psyc)
-            total_absent_lb_summary_psyc.configure(text=absent_psyc)
-            total_earldis_lb_summary_psyc.configure(text=earldis_psyc)
+			total_late_lb_summary_psyc.configure(text=late_psyc)
+			total_absent_lb_summary_psyc.configure(text=absent_psyc)
+			total_earldis_lb_summary_psyc.configure(text=earldis_psyc)
 
 			employee_num_summary_psyc.configure(state='disabled')
 
@@ -3140,7 +3140,7 @@ def new_win():
 
 		time_report()
 		display_info_applied()
-		count_data_applied():
+		count_data_applied()
 
 	# ============= ITE Summary Report In Frame ========================================================================================================================
 
