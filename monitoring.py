@@ -624,6 +624,102 @@ def new_win():
 		popupwindow_sched.photo = ImageTk.PhotoImage(popupwindow_sched.sched_resize_image)
 		popupwindow_sched.sched_bg_img_lb = Label(popupwindow_sched, image = popupwindow_sched.photo)
 		popupwindow_sched.sched_bg_img_lb.pack()
+		
+		empl_id = employee_num_fac_inf.get()
+		name_emp = employee_name_fac_inf.get()
+		depart = department_combobox.get()
+
+		def sched_read():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			read_sched = conn.cursor()
+
+			cursor.execute("SELECT Start_Time,End_Time,Subject,Room,Section FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Day='Monday'")
+			results_sched = cursor.fetchall()
+			conn.commit()
+			return results_sched
+
+		def refreshTable_sched():
+			for data_sched in data_table_sched.get_children():
+				data_table_sched.delete(data_sched)
+
+			for results_sched in reverse(sched_read()):
+				data_table_sched.insert(parent='', index='', iid=results_sched, text="", values=(results_sched), tag="orow")
+			data_table_sched.tag_configure('orow', background='#EEEEEE')
+
+		def save_sched():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			add_sched = conn.cursor()
+
+			# sched_name.configure(state='normal')
+			sched_department_combobox.configure(state='normal')
+
+			hr_strttime_sched.configure(state='normal')
+			min_strttime_sched.configure(state='normal')
+			p_strttime_sched.configure(state='normal')
+
+			hr_endtime_sched.configure(state='normal')
+			min_endtime_sched.configure(state='normal')
+			p_endtime_sched.configure(state='normal')
+
+			day_sched.configure(state='normal')
+
+			Hour_Start=hr_strttime_sched.get()
+			Min_Start=min_strttime_sched.get()
+			P_Start=p_strttime_sched.get()
+
+			Hour_End=hr_endtime_sched.get()
+			Min_End=min_endtime_sched.get()
+			P_End=p_endtime_sched.get()
+
+			Name = employee_name_fac_inf.get()
+			Department = department_combobox.get()
+			Day = day_sched.get()
+			Start_time = Hour_Start + ':' + Min_Start + ':' + Sec_Start + ' ' + P_Start
+			End_time = Hour_End + ':' + Min_End + ':' + Sec_End + ' ' + P_End
+			Subject = sub_sched.get()
+			Room = room_sched.get()
+			Section = section_sched.get()
+
+			if Name == " " or Department == " " or Day == " " or Start_time == " " or End_time == " " or Subject == " " or Room == " " or Section == " ":
+				messagebox.showinfo("Message", "Please fill up the blank entry!!")
+			else:
+				insertdata = str(empl_id),str(Name),str(Department),str(Subject),str(Room),str(Section),str(Day),str(Start_time),str(End_time)
+				add_sched.execute("""INSERT INTO schedule (Employee_id,Name,Department,Subject,Room,Section,Day,Start_Time,End_Time) 
+									VAlUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)""", insertdata)
+
+				day_sched.delete(0,END)
+				sub_sched.delete(0,END)
+				room_sched.delete(0,END)
+				section_sched.delete(0,END)
+
+				messagebox.showinfo("Message", "Data Added")
+
+				day_sched.configure(state='readonly')
+				# sched_name.configure(state='disabled')
+				# sched_department_combobox.configure(state='disabled')
+
+				hr_strttime_sched.configure(state='readonly')
+				min_strttime_sched.configure(state='readonly')
+				p_strttime_sched.configure(state='readonly')
+
+				hr_endtime_sched.configure(state='readonly')
+				min_endtime_sched.configure(state='readonly')
+				p_endtime_sched.configure(state='readonly')
+
+			day_sched.configure(state='readonly')
+			# sched_name.configure(state='disabled')
+			# sched_department_combobox.configure(state='disabled')
+			hr_strttime_sched.configure(state='readonly')
+			min_strttime_sched.configure(state='readonly')
+			p_strttime_sched.configure(state='readonly')
+
+			hr_endtime_sched.configure(state='readonly')
+			min_endtime_sched.configure(state='readonly')
+			p_endtime_sched.configure(state='readonly')
+
+			conn.commit()
+			conn.close()
+
 		def Monday():
 			btn_mon_sched.configure(fg_color="#00436e")
 			btn_tue_sched.configure(fg_color="#ffb000")
@@ -631,6 +727,30 @@ def new_win():
 			btn_thur_sched.configure(fg_color="#ffb000")
 			btn_fri_sched.configure(fg_color="#ffb000")
 			btn_sat_sched.configure(fg_color="#ffb000")
+
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			mon_sched = conn.cursor()
+
+			for record in data_table_sched.get_children():
+				data_table_sched.delete(record)
+
+			mon_sched.execute("SELECT Start_Time,End_Time,Subject,Room,Section FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Day='Monday'")
+			records = mon_sched.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+				else:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+				count += 1
+				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
+				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
+
+			conn.commit()
+			conn.close()
 
 		def Tuesday():
 			btn_mon_sched.configure(fg_color="#ffb000")
@@ -640,6 +760,30 @@ def new_win():
 			btn_fri_sched.configure(fg_color="#ffb000")
 			btn_sat_sched.configure(fg_color="#ffb000")
 
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			tue_sched = conn.cursor()
+
+			for record in data_table_sched.get_children():
+				data_table_sched.delete(record)
+
+			tue_sched.execute("SELECT Start_Time,End_Time,Subject,Room,Section FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Day='Tuesday'")
+			records = tue_sched.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+				else:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+				count += 1
+				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
+				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
+
+			conn.commit()
+			conn.close()
+
 		def Wednesday():
 			btn_mon_sched.configure(fg_color="#ffb000")
 			btn_tue_sched.configure(fg_color="#ffb000")
@@ -647,6 +791,30 @@ def new_win():
 			btn_thur_sched.configure(fg_color="#ffb000")
 			btn_fri_sched.configure(fg_color="#ffb000")
 			btn_sat_sched.configure(fg_color="#ffb000")
+
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			wed_sched = conn.cursor()
+
+			for record in data_table_sched.get_children():
+				data_table_sched.delete(record)
+
+			wed_sched.execute("SELECT Start_Time,End_Time,Subject,Room,Section FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Day='Wednesday'")
+			records = wed_sched.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+				else:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+				count += 1
+				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
+				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
+
+			conn.commit()
+			conn.close()
 
 		def Thursday():
 			btn_mon_sched.configure(fg_color="#ffb000")
@@ -656,6 +824,30 @@ def new_win():
 			btn_fri_sched.configure(fg_color="#ffb000")
 			btn_sat_sched.configure(fg_color="#ffb000")
 
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			thur_sched = conn.cursor()
+
+			for record in data_table_sched.get_children():
+				data_table_sched.delete(record)
+
+			thur_sched.execute("SELECT Start_Time,End_Time,Subject,Room,Section FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Day='Thursday'")
+			records = thur_sched.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+				else:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+				count += 1
+				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
+				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
+
+			conn.commit()
+			conn.close()
+
 		def Friday():
 			btn_mon_sched.configure(fg_color="#ffb000")
 			btn_tue_sched.configure(fg_color="#ffb000")
@@ -664,6 +856,30 @@ def new_win():
 			btn_fri_sched.configure(fg_color="#00436e")
 			btn_sat_sched.configure(fg_color="#ffb000")
 
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			fri_sched = conn.cursor()
+
+			for record in data_table_sched.get_children():
+				data_table_sched.delete(record)
+
+			fri_sched.execute("SELECT Start_Time,End_Time,Subject,Room,Section FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Day='Friday'")
+			records = fri_sched.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+				else:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+				count += 1
+				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
+				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
+
+			conn.commit()
+			conn.close()
+
 		def Saturday():
 			btn_mon_sched.configure(fg_color="#ffb000")
 			btn_tue_sched.configure(fg_color="#ffb000")
@@ -671,6 +887,242 @@ def new_win():
 			btn_thur_sched.configure(fg_color="#ffb000")
 			btn_fri_sched.configure(fg_color="#ffb000")
 			btn_sat_sched.configure(fg_color="#00436e")
+
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			sat_sched = conn.cursor()
+
+			for record in data_table_sched.get_children():
+				data_table_sched.delete(record)
+
+			sat_sched.execute("SELECT Start_Time,End_Time,Subject,Room,Section FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Day='Saturday'")
+			records = sat_sched.fetchall()
+
+			global count
+			count = 0
+
+			for record in records:
+				if count % 2 == 0:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+				else:
+					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+				count += 1
+				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
+				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
+
+			conn.commit()
+			conn.close()
+
+		def select_row_sched(e):
+			selected = data_table_sched.focus()
+			values = data_table_sched.item(selected, 'values')
+
+			if values:
+				conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+				day_cur = conn.cursor()
+				hrstrt_cur = conn.cursor()
+				minstrt_cur = conn.cursor()
+				pstrt_cur = conn.cursor()
+				hrend_cur = conn.cursor()
+				minend_cur = conn.cursor()
+				pend_cur = conn.cursend
+
+				day_sched.configure(state='normal')
+				hr_strttime_sched.configure(state='normal')
+				min_strttime_sched.configure(state='normal')
+				p_strttime_sched.configure(state='normal')
+
+				hr_endtime_sched.configure(state='normal')
+				min_endtime_sched.configure(state='normal')
+				p_endtime_sched.configure(state='normal')
+
+				day_sched.delete(0,END)
+				sub_sched.delete(0,END)
+				room_sched.delete(0,END)
+				section_sched.delete(0,END)
+				p_strttime_sched.delete(0,END)
+				p_endtime_sched.delete(0,END)
+
+				sub_sched.insert(0,values[2])
+				room_sched.insert(0,values[3])
+				section_sched.insert(0,values[4])
+
+				subject = sub_sched.get()
+
+				day_cur.execute("SELECT Day FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
+				day = day_cur.fetchone()
+
+				hrstrt_cur.execute("SELECT DISTINCT SUBSTR(Start_Time,1,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
+				hr_strttime = hrstrt_cur.fetchone()
+
+				minstrt_cur.execute("SELECT DISTINCT SUBSTR(Start_Time,4,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
+				min_strttime = minstrt_cur.fetchone()
+
+				pstrt_cur.execute("SELECT DISTINCT SUBSTR(Start_Time,10,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
+				p_strttime = pstrt_cur.fetchone()
+
+				hrend_cur.execute("SELECT DISTINCT SUBSTR(End_Time,1,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
+				hr_endtime = hrend_cur.fetchone()
+
+				minend_cur.execute("SELECT DISTINCT SUBSTR(End_Time,4,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
+				min_endtime = minend_cur.fetchone()
+
+				pend_cur.execute("SELECT DISTINCT SUBSTR(End_Time,10,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
+				p_endtime = pend_cur.fetchone()
+
+				HR_strttime = IntVar()
+				HR_strttime.set(hr_strttime)
+				MIN_strttime = IntVar()
+				MIN_strttime.set(min_strttime)
+
+				hr_strttime_sched.configure(textvariable=HR_strttime)
+				min_strttime_sched.configure(textvariable=MIN_strttime)
+				p_strttime_sched.insert(0,p_strttime)
+
+				HR_endtime = IntVar()
+				HR_endtime.set(hr_endtime)
+				MIN_endtime = IntVar()
+				MIN_endtime.set(min_endtime)
+
+				hr_endtime_sched.configure(textvariable=HR_endtime)
+				min_endtime_sched.configure(textvariable=MIN_endtime)
+				p_endtime_sched.insert(0,p_strttime)
+
+				day_sched.insert(0,day)
+
+				sub_sched_lb.configure(text=subject)
+
+				day_sched.configure(state='readonly')
+				hr_strttime_sched.configure(state='readonly')
+				min_strttime_sched.configure(state='readonly')
+				p_strttime_sched.configure(state='readonly')
+
+				hr_endtime_sched.configure(state='readonly')
+				min_endtime_sched.configure(state='readonly')
+				p_endtime_sched.configure(state='readonly')
+
+				conn.commit()
+				conn.close()
+
+				button_update_sched.configure(state='normal')
+			else:
+				messagebox.showinfo("Error", "There is no data on the table !!")
+
+		def update_sched():
+			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
+			update = conn.cursor()
+
+			day_sched.configure(state='normal')
+			hr_strttime_sched.configure(state='normal')
+			min_strttime_sched.configure(state='normal')
+			p_strttime_sched.configure(state='normal')
+
+			hr_endtime_sched.configure(state='normal')
+			min_endtime_sched.configure(state='normal')
+			p_endtime_sched.configure(state='normal')
+
+			Hour_Start=hr_strttime_sched.get()
+			Min_Start=min_strttime_sched.get()
+			P_Start=p_strttime_sched.get()
+
+			Hour_End=hr_endtime_sched.get()
+			Min_End=min_endtime_sched.get()
+			P_End=p_endtime_sched.get()
+
+			subj = sub_sched_lb.cget("text")
+
+			Day=day_sched.get()
+			Start_time= Hour_Start + ':' + Min_Start + ':' + Sec_Start + ' ' + P_Start
+			End_time= Hour_End + ':' + Min_End + ':' + Sec_End + ' ' + P_End
+			Subject=sub_sched.get()
+			Room=room_sched.get()
+			Section=section_sched.get()
+
+			update.execute("UPDATE schedule SET Day='"+ str(Day) +"',Start_Time='"+ str(Start_time) +"',End_Time='"+ str(End_time) +"',Subject='"+ str(Subject) +"',Room='"+ str(Room) +"',Section='"+ str(Section) +"' WHERE Employee_id ='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subj) +"'")
+
+			day_sched.delete(0,END)
+			sub_sched.delete(0,END)
+			room_sched.delete(0,END)
+			section_sched.delete(0,END)
+			p_strttime_sched.delete(0,END)
+			p_endtime_sched.delete(0,END)
+			p_strttime_sched.insert(0,"AM")
+			p_endtime_sched.insert(0,"AM")
+
+			zero= "00"
+			HR_strttime = IntVar()
+			HR_strttime.set(zero)
+			MIN_strttime = IntVar()
+			MIN_strttime.set(zero)
+
+			hr_strttime_sched.configure(textvariable=HR_strttime)
+			min_strttime_sched.configure(textvariable=MIN_strttime)
+
+			HR_endtime = IntVar()
+			HR_endtime.set(zero)
+			MIN_endtime = IntVar()
+			MIN_endtime.set(zero)
+
+			hr_endtime_sched.configure(textvariable=HR_endtime)
+			min_endtime_sched.configure(textvariable=MIN_endtime)
+
+			day_sched.configure(state='readonly')
+			hr_strttime_sched.configure(state='readonly')
+			min_strttime_sched.configure(state='readonly')
+			p_strttime_sched.configure(state='readonly')
+
+			hr_endtime_sched.configure(state='readonly')
+			min_endtime_sched.configure(state='readonly')
+			p_endtime_sched.configure(state='readonly')
+
+			button_update_sched.configure(state='disabled')
+
+			conn.commit()
+			conn.close()
+
+		def clear_sched():
+			day_sched.configure(state='normal')
+			hr_strttime_sched.configure(state='normal')
+			min_strttime_sched.configure(state='normal')
+			p_strttime_sched.configure(state='normal')
+
+			hr_endtime_sched.configure(state='normal')
+			min_endtime_sched.configure(state='normal')
+			p_endtime_sched.configure(state='normal')
+
+			day_sched.delete(0,END)
+			sub_sched.delete(0,END)
+			room_sched.delete(0,END)
+			section_sched.delete(0,END)
+			p_strttime_sched.delete(0,END)
+			p_endtime_sched.delete(0,END)
+			p_strttime_sched.insert(0,"AM")
+			p_endtime_sched.insert(0,"AM")
+
+			zero= "00"
+			HR_strttime = IntVar()
+			HR_strttime.set(zero)
+			MIN_strttime = IntVar()
+			MIN_strttime.set(zero)
+
+			hr_strttime_sched.configure(textvariable=HR_strttime)
+			min_strttime_sched.configure(textvariable=MIN_strttime)
+
+			HR_endtime = IntVar()
+			HR_endtime.set(zero)
+			MIN_endtime = IntVar()
+			MIN_endtime.set(zero)
+
+			hr_endtime_sched.configure(textvariable=HR_endtime)
+			min_endtime_sched.configure(textvariable=MIN_endtime)
+
+			day_sched.configure(state='readonly')
+			hr_strttime_sched.configure(state='readonly')
+			min_strttime_sched.configure(state='readonly')
+			p_strttime_sched.configure(state='readonly')
+
+			hr_endtime_sched.configure(state='readonly')
+			min_endtime_sched.configure(state='readonly')
+			p_endtime_sched.configure(state='readonly')
 
 		    # Data Table "TreeView"
 		scrollbary_sched = Scrollbar(popupwindow_sched, orient=VERTICAL)
@@ -700,6 +1152,10 @@ def new_win():
 		data_table_sched.heading("Subject", text="Subject", anchor=CENTER)
 		data_table_sched.heading("Room", text="Room", anchor=CENTER)
 		data_table_sched.heading("Section", text="Section", anchor=CENTER)
+
+		data_table_sched.bind("<ButtonRelease-1>", select_row_sched)
+
+		refreshTable_sched()
 
 		    # Entry Employee Name
 		sched_name = Entry(popupwindow_sched, state='disabled')
@@ -781,19 +1237,19 @@ def new_win():
 		    # Save Data Button
 		save_pic = PhotoImage(file = "pic/btn_save.png")
 		save_button_sched = customtkinter.CTkButton(master=popupwindow_sched,image=save_pic, text="" ,
-		                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command='save_sched')
+		                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command=save_sched)
 		save_button_sched.place(x=315, y=290, height=32,width=131)
 
 		    # Updated Button
 		update_pic = PhotoImage(file = "pic/btn_update.png")
 		button_update_sched = customtkinter.CTkButton(master=popupwindow_sched,state='disabled',image=update_pic, text="" ,
-		                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command='update_sched')
+		                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command=update_sched)
 		button_update_sched.place(x=460, y=290, height=32,width=131)
 
 		    # Reset Button
 		reset_btnsched = PhotoImage(file = "pic/btn_reset.png")
 		button_resetsched = customtkinter.CTkButton(master=popupwindow_sched,image=reset_btnsched, text="" ,
-		                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command='clear_sched')
+		                                            corner_radius=6, fg_color="#00436e",hover_color="#006699", command=clear_sched)
 		button_resetsched.place(x=605, y=290, height=32,width=131)
 
 		    # Moday Button
