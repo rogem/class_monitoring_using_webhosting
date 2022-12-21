@@ -633,8 +633,8 @@ def new_win():
 			conn = mysql.connect(host='sql597.main-hosting.eu', database='u216842900_monitoring', user='u216842900_cas', password='Earist@2023')
 			read_sched = conn.cursor()
 
-			cursor.execute("SELECT Start_Time,End_Time,Subject,Room,Section FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Day='Monday'")
-			results_sched = cursor.fetchall()
+			read_sched.execute("SELECT Start_Time,End_Time,Subject,Room,Section FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Day='Monday'")
+			results_sched = read_sched.fetchall()
 			conn.commit()
 			return results_sched
 
@@ -1229,8 +1229,8 @@ def new_win():
 
 		sched_name.configure(state='normal')
 		sched_department_combobox.configure(state='normal')
-		# sched_name.insert(0, name_emp)
-		# sched_department_combobox.insert(0, depart)
+		sched_name.insert(0, name_emp)
+		sched_department_combobox.insert(0, depart)
 		sched_name.configure(state='disabled')
 		sched_department_combobox.configure(state='disabled')
 
