@@ -705,6 +705,7 @@ def new_win():
 				hr_endtime_sched.configure(state='readonly')
 				min_endtime_sched.configure(state='readonly')
 				p_endtime_sched.configure(state='readonly')
+				refreshTable_sched()
 
 			day_sched.configure(state='readonly')
 			# sched_name.configure(state='disabled')
@@ -716,6 +717,7 @@ def new_win():
 			hr_endtime_sched.configure(state='readonly')
 			min_endtime_sched.configure(state='readonly')
 			p_endtime_sched.configure(state='readonly')
+			refreshTable_sched()
 
 			conn.commit()
 			conn.close()
@@ -1075,6 +1077,7 @@ def new_win():
 			p_endtime_sched.configure(state='readonly')
 
 			button_update_sched.configure(state='disabled')
+			refreshTable_sched()
 
 			conn.commit()
 			conn.close()
@@ -1159,11 +1162,11 @@ def new_win():
 
 		    # Entry Employee Name
 		sched_name = Entry(popupwindow_sched, state='disabled')
-		sched_name.place(x=180, y=172, width=150)
+		sched_name.place(x=180, y=165, width=150)
 
 		    # Entry Day
 		day_sched = ttk.Combobox(popupwindow_sched,  state='readonly', values=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"])
-		day_sched.place(x=180, y=209, width=150)
+		day_sched.place(x=180, y=202, width=150)
 
 		    # Subject Label
 		sub_sched_lb = Label(popupwindow_sched, fg='#f0f0f0', font = "Heltvetica 9")
@@ -1171,11 +1174,11 @@ def new_win():
 
 		    # Entry Subject
 		sub_sched = Entry(popupwindow_sched)
-		sub_sched.place(x=180, y=258, width=150)
+		sub_sched.place(x=180, y=251, width=150)
 
 		    # ComboBox College Department
 		sched_department_combobox = ttk.Combobox(popupwindow_sched, state='disabled', values=["Mathematics", "ITE", "Psychology", "Applied Physics"])
-		sched_department_combobox.place(x=545, y=172, width=150)
+		sched_department_combobox.place(x=545, y=163, width=150)
 
 		#     # Entry Start Time
 		# strttime_sched= Entry(popupwindow_sched,textvariable=time_format)
@@ -1185,22 +1188,22 @@ def new_win():
 		var_hr_strt = IntVar()
 		var_hr_strt.set(00)
 		hr_strttime_sched = Spinbox(popupwindow_sched, state='readonly', from_=00, to=12, format="%02.0f",textvariable=var_hr_strt)
-		hr_strttime_sched.place(x=545, y=209, width=35)
+		hr_strttime_sched.place(x=545, y=202, width=35)
 
 		    # Entry Start Time Minute
 		var_min_strt = IntVar()
 		var_min_strt.set(00)
 		min_strttime_sched = Spinbox(popupwindow_sched, state='readonly', from_=00, to=59, format="%02.0f",textvariable=var_min_strt)
-		min_strttime_sched.place(x=585, y=209, width=35)
+		min_strttime_sched.place(x=585, y=202, width=35)
 
 		    # ComboBox College Department
 		p_strttime_sched = ttk.Combobox(popupwindow_sched, state='readonly', values=["AM", "PM",])
 		p_strttime_sched.set("AM")
-		p_strttime_sched.place(x=625, y=209, width=45)
+		p_strttime_sched.place(x=625, y=202, width=45)
 
 		    # Entry Room
 		room_sched = Entry(popupwindow_sched)
-		room_sched.place(x=545, y=258, width=150)
+		room_sched.place(x=545, y=247, width=150)
 
 		#     # Entry End Time
 		# endtime_sched = Entry(popupwindow_sched)
@@ -1210,22 +1213,22 @@ def new_win():
 		var_hr_end = IntVar()
 		var_hr_end.set(00)
 		hr_endtime_sched = Spinbox(popupwindow_sched, state='readonly', from_=00, to=12, format="%02.0f",textvariable=var_hr_end)
-		hr_endtime_sched.place(x=810, y=209, width=35)
+		hr_endtime_sched.place(x=810, y=202, width=35)
 
 		    # Entry End Time Minute
 		var_min_end = IntVar()
 		var_min_end.set(00)
 		min_endtime_sched = Spinbox(popupwindow_sched, state='readonly', from_=00, to=59, format="%02.0f",textvariable=var_min_end)
-		min_endtime_sched.place(x=850, y=209, width=35)
+		min_endtime_sched.place(x=850, y=202, width=35)
 
 		    # ComboBox College Department
 		p_endtime_sched = ttk.Combobox(popupwindow_sched, state='readonly', values=["AM", "PM",])
 		p_endtime_sched.set("AM")
-		p_endtime_sched.place(x=890, y=209, width=45)
+		p_endtime_sched.place(x=890, y=202, width=45)
 
 		    # Entry Section
 		section_sched = Entry(popupwindow_sched)
-		section_sched.place(x=810, y=258, width=150)
+		section_sched.place(x=810, y=249, width=150)
 
 		sched_name.configure(state='normal')
 		sched_department_combobox.configure(state='normal')
