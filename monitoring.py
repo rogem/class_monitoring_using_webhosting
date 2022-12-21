@@ -643,7 +643,7 @@ def new_win():
 				data_table_sched.delete(data_sched)
 
 			for results_sched in reverse(sched_read()):
-				data_table_sched.insert(parent='', index='', iid=results_sched, text="", values=(results_sched), tag="orow")
+				data_table_sched.insert(parent='', index='end', iid=results_sched, text="", values=(results_sched), tag="orow")
 			data_table_sched.tag_configure('orow', background='#EEEEEE')
 
 		def save_sched():
@@ -674,8 +674,8 @@ def new_win():
 			Name = employee_name_fac_inf.get()
 			Department = department_combobox.get()
 			Day = day_sched.get()
-			Start_time = Hour_Start + ':' + Min_Start + ':' + Sec_Start + ' ' + P_Start
-			End_time = Hour_End + ':' + Min_End + ':' + Sec_End + ' ' + P_End
+			Start_time = Hour_Start + ':' + Min_Start + ':' + P_Start
+			End_time = Hour_End + ':' + Min_End + ':' + P_End
 			Subject = sub_sched.get()
 			Room = room_sched.get()
 			Section = section_sched.get()
@@ -742,9 +742,9 @@ def new_win():
 
 			for record in records:
 				if count % 2 == 0:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
 				else:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
 				count += 1
 				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
 				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
@@ -774,9 +774,9 @@ def new_win():
 
 			for record in records:
 				if count % 2 == 0:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
 				else:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
 				count += 1
 				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
 				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
@@ -806,9 +806,9 @@ def new_win():
 
 			for record in records:
 				if count % 2 == 0:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
 				else:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
 				count += 1
 				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
 				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
@@ -838,9 +838,9 @@ def new_win():
 
 			for record in records:
 				if count % 2 == 0:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
 				else:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
 				count += 1
 				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
 				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
@@ -870,9 +870,9 @@ def new_win():
 
 			for record in records:
 				if count % 2 == 0:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+					data_table_sched.insert(parent='', index='endend', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
 				else:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+					data_table_sched.insert(parent='', index='endend', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
 				count += 1
 				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
 				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
@@ -902,9 +902,9 @@ def new_win():
 
 			for record in records:
 				if count % 2 == 0:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="evenrow")
 				else:
-					data_table_sched.insert(parent='', index='', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
+					data_table_sched.insert(parent='', index='end', iid=count, text="", values=(record[0],record[1],record[2],record[3],record[4]), tag="oddrow")
 				count += 1
 				data_table_sched.tag_configure('evenrow', background='#EEEEEE')
 				data_table_sched.tag_configure('oddrow', background='#EEEEEE')
@@ -924,7 +924,7 @@ def new_win():
 				pstrt_cur = conn.cursor()
 				hrend_cur = conn.cursor()
 				minend_cur = conn.cursor()
-				pend_cur = conn.cursend
+				pend_cur = conn.cursor()
 
 				day_sched.configure(state='normal')
 				hr_strttime_sched.configure(state='normal')
@@ -957,7 +957,7 @@ def new_win():
 				minstrt_cur.execute("SELECT DISTINCT SUBSTR(Start_Time,4,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
 				min_strttime = minstrt_cur.fetchone()
 
-				pstrt_cur.execute("SELECT DISTINCT SUBSTR(Start_Time,10,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
+				pstrt_cur.execute("SELECT DISTINCT SUBSTR(Start_Time,7,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
 				p_strttime = pstrt_cur.fetchone()
 
 				hrend_cur.execute("SELECT DISTINCT SUBSTR(End_Time,1,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
@@ -966,7 +966,7 @@ def new_win():
 				minend_cur.execute("SELECT DISTINCT SUBSTR(End_Time,4,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
 				min_endtime = minend_cur.fetchone()
 
-				pend_cur.execute("SELECT DISTINCT SUBSTR(End_Time,10,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
+				pend_cur.execute("SELECT DISTINCT SUBSTR(End_Time,7,2) FROM schedule WHERE Employee_id='"+ str(empl_id) +"' AND Department='"+ str(depart) +"' AND Subject='"+ str(subject) +"'")
 				p_endtime = pend_cur.fetchone()
 
 				HR_strttime = IntVar()
@@ -1031,8 +1031,8 @@ def new_win():
 			subj = sub_sched_lb.cget("text")
 
 			Day=day_sched.get()
-			Start_time= Hour_Start + ':' + Min_Start + ':' + Sec_Start + ' ' + P_Start
-			End_time= Hour_End + ':' + Min_End + ':' + Sec_End + ' ' + P_End
+			Start_time= Hour_Start + ':' + Min_Start + ':' + P_Start
+			End_time= Hour_End + ':' + Min_End + ':' + P_End
 			Subject=sub_sched.get()
 			Room=room_sched.get()
 			Section=section_sched.get()
